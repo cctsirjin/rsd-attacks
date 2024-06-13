@@ -1,16 +1,16 @@
 #ifndef CACHE_H
 #define CACHE_H
 
-// L1 data cache mapping for T-Head TH1520 SoC (quad XuanTie C910 cores)
-// L1 data Cache Capacity(C): "Each core contains 64KB I cache amd 64KB D Cache." Refer to https://github.com/sipeed/sipeed_wiki/blob/main/docs/hardware/en/lichee/th1520/lpi4a/1_intro.md
-#define L1_DCACHE_WAYS 2 // Degree of associativity N = 2. i.e. 2-way set associative. Refer to https://www.riscfive.com/2023/03/09/t-head-xuantie-c910-risc-v/
-#define L1_DCACHE_BLOCK_BYTES 64 // b = 64Byte. "Fixed cache line length of 64 bytes." Refer to https://www.riscfive.com/2023/03/09/t-head-xuantie-c910-risc-v/
-#define L1_DCACHE_BLOCK_BITS 6 // = log2(b).
-#define L1_DCACHE_SETS 512 // S = 512. S=B/N=C/Nb. Here C=64KiB, L1_DCACHE_WAYS=N=2, b=64B, so we have S=64KiB/(2x64B)=(1/2)K=512.
-#define L1_DCACHE_SETS_BITS 9 // = log2(S)
-// Also search "i-cache-sets" in https://lore.kernel.org/linux-riscv/20230617161529.2092-6-jszhang@kernel.org/
-#define L1_DCACHE_CAPACITY_BYTES (L1_DCACHE_SETS*L1_DCACHE_WAYS*L1_DCACHE_BLOCK_BYTES) // Cache Capacity C=Bb=SNb=1K*64Byte=64KiB
-#define FULL_MASK 0xFFFFFFFFFFFFFFFF // The address size is 64 bits.
+// L1 data cache mapping for U Tokyo Shioya Lab RSD(RaiShouDou) CPU
+// Refer to https://github.com/rsd-devel/rsd/blob/master/Processor/Src/MicroArchConf.sv
+#define L1_DCACHE_WAYS 2 // Degree of associativity N = 2. i.e. 2-way set associative. In the link above: "CONF_DCACHE_WAY_NUM = 2"
+#define L1_DCACHE_BLOCK_BYTES 8 // b = 8Byte. In the link above: "CONF_DCACHE_LINE_BYTE_NUM = 8"
+#define L1_DCACHE_BLOCK_BITS 3 // = log2(b).
+#define L1_DCACHE_SETS 256 // S = 2^L1_DCACHE_SETS_BITS.
+// Ref: S=B/N=C/Nb. Here C=4KiB, L1_DCACHE_WAYS=N=2, b=8Byte, so we have S=4KiB/(2x8Byte)=(1/4)K=256.
+#define L1_DCACHE_SETS_BITS 8 // = log2(S). In the link above: "CONF_DCACHE_INDEX_BIT_WIDTH = 9 - $clog2(CONF_DCACHE_WAY_NUM)"
+#define L1_DCACHE_CAPACITY_BYTES (L1_DCACHE_SETS*L1_DCACHE_WAYS*L1_DCACHE_BLOCK_BYTES) // Cache Capacity C=Bb=SNb=256*2*8Byte=4KiB
+#define FULL_MASK 0xFFFFFFFF // The address size is 32 bits. Refer to https://github.com/rsd-devel/rsd/blob/master/Processor/Src/BasicTypes.sv "ADDR_WIDTH = 32"
 /**
  * Sv39 virtual memory translation:
  * Instruction fetch addresses and load and store effective addresses, which are 64 bits,
