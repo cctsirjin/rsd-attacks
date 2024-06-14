@@ -7,7 +7,7 @@
     .type   serial_wait, @function
 serial_wait:
 .LFB0:
-    .file 1 "HelloWorld/../lib.c"
+    .file 1 "rsd-attacks/../lib.c"
     .loc 1 11 0
     .loc 1 17 0
     ret
