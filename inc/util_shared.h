@@ -37,12 +37,12 @@
  * @inout outIdxArray array holding the idxs of the top two values ([0] idx has the larger value in inArray array)
  * @inout outValArray array holding the top two values ([0] has the larger value)
  */
-void topTwoIdx(uint64_t* inArray, uint64_t inArraySize, uint8_t* outIdxArray, uint64_t* outValArray){
+void topTwoIdx(uint32_t* inArray, uint32_t inArraySize, uint8_t* outIdxArray, uint32_t* outValArray){
 	
 	outValArray[0] = 0;
 	outValArray[1] = 0;
 
-	for (uint64_t i = 0; i < inArraySize; i++){
+	for (uint32_t i = 0; i < inArraySize; i++){
 		if (inArray[i] > outValArray[0]){
 			outValArray[1] = outValArray[0];
 			outValArray[0] = inArray[i];
@@ -56,27 +56,4 @@ void topTwoIdx(uint64_t* inArray, uint64_t inArraySize, uint8_t* outIdxArray, ui
 	}
 }
 
-void dynamicInputString(char* defaultString, int maxStringLength, char* outputString){
-	
-	int userStringLength;
-	
-	printf("------ Customized Settings of Target String ------\n");
-	printf("Please enter a string (in extended ASCII with "ANSI_CODE_RED"a maximum of %d characters"ANSI_CODE_RESET"), \nor enter nothing to apply default settings. (default: %s)\n", maxStringLength, defaultString);
-	printf("Part of input string that exceeds the maximum length will get chopped.\n(You can manually adjust #define MAX_STRING_LENGTH_FACTOR in the source code file.)\n");
-	printf("Now provide your string: ");
-	
-	// Read the string using fgets and remove potential trailing newline.
-	fgets(outputString, maxStringLength, stdin);
-	outputString[strcspn(outputString, "\n")] = '\0';	
-	userStringLength = strlen(outputString);
-	
-	if (userStringLength == 0) {
-		printf("Using default string: "ANSI_CODE_YELLOW"%s"ANSI_CODE_RESET"\n", defaultString);
-		strcpy(outputString, defaultString);
-	} else {
-		printf("Using customized string: "ANSI_CODE_YELLOW"%s"ANSI_CODE_RESET"\n", outputString);
-	
-	}
-
-}
 #endif
