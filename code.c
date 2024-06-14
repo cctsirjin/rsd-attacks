@@ -263,8 +263,9 @@ int main(void){
 	//printf("Guessed: "ANSI_CODE_CYAN"%s"ANSI_CODE_RESET"\n", guessString);
 	//printf("****** That Is All for the Demonstration ******\n");
 	
+    // Since the size of the secret string is not dynamic anymore, the mem does not need to be freed.
 	// Free the allocated memory after use.
-	free(secretString);
+	//free(secretString);
 
 	return 0;
 }
