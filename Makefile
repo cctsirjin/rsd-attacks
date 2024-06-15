@@ -23,19 +23,7 @@ DEP:=dep
 #CFLAGS=-mcmodel=medany -l -std=gnu99 -O0 -g -fno-common -fno-builtin-printf -Wall -I$(INC) -Wno-unused-function -Wno-unused-variable
 #CFLAGS = -mcmodel=medany -mstrict-align -march=rv32imf -mabi=ilp32f -l -std=gnu99 -g -O0 -fno-common -I$(INC) -fno-zero-initialized-in-bss -fno-builtin-printf -Wall -Wno-unused-function -Wno-unused-variable
 
-CFLAGS = \
-	-g \
-	-O0 \ #03
-	-fno-stack-protector \
-	-fno-zero-initialized-in-bss \
-	-ffreestanding \
-	-fno-builtin \
-	-nostdlib \
-	-nodefaultlibs \
-	-nostartfiles \
-	-mstrict-align \
-	-march=rv32imf \
-    -I$(INC)
+CFLAGS = -g -O0 -fno-stack-protector -fno-zero-initialized-in-bss -ffreestanding -fno-builtin -nostdlib -nodefaultlibs -nostartfiles -mstrict-align -march=rv32imf -I$(INC)
 
 # Universal GCC options: -g debugging. -l library
 # https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html
