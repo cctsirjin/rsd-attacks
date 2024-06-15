@@ -124,10 +124,12 @@ int main(void){
 //	printf("- Target Chipset: RISC-V TH1520 SoC (Quad T-Head XuanTie C910)\n");
 	
 	char* defaultString = DEFAULT_STRING;
-	int maxStringLength = strlen(defaultString) * MAX_STRING_LENGTH_FACTOR;
+	//int maxStringLength = strlen(defaultString) * MAX_STRING_LENGTH_FACTOR;
     // Fixed because there is no printf in RSD.
     char* secretString = DEFAULT_STRING;
-	
+	// Can not use strlen(secretString) so use this instead
+	uint32_t secretStringLength = 32
+
     // Allocate memory for the string. 
 	// Need to do this in main function because return 1 of subfunction will not terminate the main.
 	//secretString = malloc(maxStringLength * sizeof(char));
@@ -149,7 +151,8 @@ int main(void){
 	uint8_t output[2];
 	uint32_t hitArray[2];
 	
-	char guessString[strlen(secretString)+1];
+	//char guessString[strlen(secretString)+1];
+	char guessString[secretStringLength+1];
 	/* Fill the guessString with NULL terminators. */
 	for (int i = 0; i < sizeof(guessString); i++){
 		guessString[i] = '\0';
@@ -189,7 +192,8 @@ int main(void){
 	// About strlen() function: https://en.cppreference.com/w/cpp/string/byte/strlen
 	// Note: sizeof() does not care about the value of a string, so can not be used here.
 	// Ref: https://www.geeksforgeeks.org/difference-strlen-sizeof-string-c-reviewed/
-	for(uint32_t len = 0; len < (strlen(secretString)); len++){
+	//for(uint32_t len = 0; len < (strlen(secretString)); len++){
+	for(uint32_t len = 0; len < (secretStringLength); len++){
 		
 		// Clear results every round.
 		for(uint32_t cIdx = 0; cIdx < RESULT_ARRAY_SIZE; cIdx++){
