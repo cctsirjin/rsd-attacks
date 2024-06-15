@@ -4,3 +4,4 @@ obj/*
 dump/*
 */*.swp
 *.swp
+.vscode
