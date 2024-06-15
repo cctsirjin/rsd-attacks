@@ -128,7 +128,7 @@ int main(void){
     // Fixed because there is no printf in RSD.
     char* secretString = DEFAULT_STRING;
 	// Can not use strlen(secretString) so use this instead
-	uint32_t secretStringLength = 32
+	uint32_t secretStringLength = 32;
 
     // Allocate memory for the string. 
 	// Need to do this in main function because return 1 of subfunction will not terminate the main.
