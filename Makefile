@@ -3,6 +3,15 @@ XCFLAGS = -g
 SRCS = code.c
 include ../BuildC.inc.mk
 
+HOST_TYPE = $(shell uname)
+
+# Platform: linux
+ifneq (,$(findstring Linux,$(HOST_TYPE)))
+RSD_GCC_NATIVE = $(RSD_GCC_PATH)
+RSD_ENV_NATIVE = $(RSD_ENV)
+RSD_ROOT_NATIVE = $(RSD_ROOT)
+endif
+
 # Folders
 #SRC:=src
 INC:=inc
@@ -22,22 +31,7 @@ DEP:=dep
 
 #CFLAGS=-mcmodel=medany -l -std=gnu99 -O0 -g -fno-common -fno-builtin-printf -Wall -I$(INC) -Wno-unused-function -Wno-unused-variable
 
-CFLAGS = \
-        -l \
-		-std=gnu99 \
-		-O0
-		-fno-common \
-        -g \
-		-I$(INC) \
-        -fno-zero-initialized-in-bss \
-        -ffreestanding \
-		-fno-builtin-printf \
-		-Wall \
-		-Wno-unused-function \
-		-Wno-unused-variable \
-        -mstrict-align \
-        -march=rv32imf \
-        -mabi=ilp32f
+CFLAGS = -l -std=gnu99 -O0 -fno-common -g -I$(INC) -fno-zero-initialized-in-bss -ffreestanding -fno-builtin-printf -Wall -Wno-unused-function -Wno-unused-variable -mstrict-align -march=rv32imf -mabi=ilp32f
  
 LDFLAGS= \
         -static \
