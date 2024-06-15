@@ -15,12 +15,53 @@ DEP:=dep
 # Commands and flags
 #CC:=riscv32-unknown-elf-gcc
 #OBJDUMP:=riscv32-unknown-elf-objdump -S
-LDFLAGS:=-static -lgcc
+#LDFLAGS:=-static -lgcc
 
 # -lgcc: linker parameter that tells the linker to link against libgcc
 # https://stackoverflow.com/questions/28455999/do-i-have-to-link-the-files-with-lgcc
 
-CFLAGS=-mcmodel=medany -l -std=gnu99 -O0 -g -fno-common -fno-builtin-printf -Wall -I$(INC) -Wno-unused-function -Wno-unused-variable
+#CFLAGS=-mcmodel=medany -l -std=gnu99 -O0 -g -fno-common -fno-builtin-printf -Wall -I$(INC) -Wno-unused-function -Wno-unused-variable
+
+CFLAGS = \
+##		-mcmodel=medany \
+
+		-l \
+		-std=gnu99 \
+		-O0
+		-fno-common \
+        -g \ 
+#        -O3 \
+#        -fno-stack-protector \
+
+		-I$(INC) \
+        -fno-zero-initialized-in-bss \
+        -ffreestanding \
+		-fno-builtin-printf \
+
+#       -fno-builtin \
+#       -nostdlib \   
+#       -nodefaultlibs \
+#       -nostartfiles \
+		
+		-Wall \
+		-Wno-unused-function \
+		-Wno-unused-variable \
+        -mstrict-align \
+        -march=rv32imf \
+        -mabi=ilp32f
+ 
+LDFLAGS= \
+        -static \
+		-lgcc
+ 
+LIBC =    
+LIBGCC = \
+        -L$(RSD_GCC_NATIVE)/../lib/gcc/${RSD_GCC_NAME}/$(RSD_GCC_VERSION) \
+        -lgcc \
+        -lgcov \
+        -L$(RSD_GCC_NATIVE)/../${RSD_GCC_NAME}/lib \
+        -lm
+
 
 # Universal GCC options: -g debugging. -l library
 # https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html
