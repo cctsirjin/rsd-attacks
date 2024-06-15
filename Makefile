@@ -23,26 +23,15 @@ DEP:=dep
 #CFLAGS=-mcmodel=medany -l -std=gnu99 -O0 -g -fno-common -fno-builtin-printf -Wall -I$(INC) -Wno-unused-function -Wno-unused-variable
 
 CFLAGS = \
-##		-mcmodel=medany \
-
-		-l \
+        -l \
 		-std=gnu99 \
 		-O0
 		-fno-common \
-        -g \ 
-#        -O3 \
-#        -fno-stack-protector \
-
+        -g \
 		-I$(INC) \
         -fno-zero-initialized-in-bss \
         -ffreestanding \
 		-fno-builtin-printf \
-
-#       -fno-builtin \
-#       -nostdlib \   
-#       -nodefaultlibs \
-#       -nostartfiles \
-		
 		-Wall \
 		-Wno-unused-function \
 		-Wno-unused-variable \
