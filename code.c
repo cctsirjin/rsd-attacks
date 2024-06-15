@@ -163,7 +163,7 @@ int main(void){
 		knownString[i] = '\0';
 	}
 
-	srand(time(NULL));
+	//srand(time(NULL));
 
 	/* Write to probeArray so in RAM not copy-on-write zero pages. */
 	for (int i = 0; i < sizeof(probeArray); i++){
