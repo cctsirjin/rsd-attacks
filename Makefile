@@ -31,7 +31,7 @@ DEP:=dep
 
 #CFLAGS=-mcmodel=medany -l -std=gnu99 -O0 -g -fno-common -fno-builtin-printf -Wall -I$(INC) -Wno-unused-function -Wno-unused-variable
 
-CFLAGS = -mcmodel=medany -march=rv32imf -mabi=ilp32f -l -std=gnu99 -g -O0 -fno-common -I$(INC) -fno-zero-initialized-in-bss -ffreestanding -fno-builtin-printf -Wall -Wno-unused-function -Wno-unused-variable
+CFLAGS = -mcmodel=medany -mstrict-align -march=rv32imf -mabi=ilp32f -l -std=gnu99 -g -O0 -fno-common -I$(INC) -fno-zero-initialized-in-bss -ffreestanding -fno-builtin-printf -Wall -Wno-unused-function -Wno-unused-variable
  
 LDFLAGS= \
         -static \
@@ -41,7 +41,6 @@ LIBC =
 LIBGCC = \
         -L$(RSD_GCC_NATIVE)/../lib/gcc/${RSD_GCC_NAME}/$(RSD_GCC_VERSION) \
         -lgcc \
-        -lgcov \
         -L$(RSD_GCC_NATIVE)/../${RSD_GCC_NAME}/lib \
         -lm
 
