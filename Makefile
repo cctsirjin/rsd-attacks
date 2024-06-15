@@ -3,15 +3,6 @@ XCFLAGS = -g
 SRCS = code.c
 include ../BuildC.inc.mk
 
-HOST_TYPE = $(shell uname)
-
-# Platform: linux
-ifneq (,$(findstring Linux,$(HOST_TYPE)))
-RSD_GCC_NATIVE = $(RSD_GCC_PATH)
-RSD_ENV_NATIVE = $(RSD_ENV)
-RSD_ROOT_NATIVE = $(RSD_ROOT)
-endif
-
 # Folders
 #SRC:=src
 INC:=inc
@@ -32,17 +23,6 @@ DEP:=dep
 #CFLAGS=-mcmodel=medany -l -std=gnu99 -O0 -g -fno-common -fno-builtin-printf -Wall -I$(INC) -Wno-unused-function -Wno-unused-variable
 
 CFLAGS = -mcmodel=medany -mstrict-align -march=rv32imf -mabi=ilp32f -l -std=gnu99 -g -O0 -fno-common -I$(INC) -fno-zero-initialized-in-bss -fno-builtin-printf -Wall -Wno-unused-function -Wno-unused-variable
- 
-LDFLAGS= \
-        -static \
-		-lgcc
- 
-LIBC =    
-LIBGCC = \
-        -L$(RSD_GCC_NATIVE)/../lib/gcc/${RSD_GCC_NAME}/$(RSD_GCC_VERSION) \
-        -lgcc \
-        -L$(RSD_GCC_NATIVE)/../${RSD_GCC_NAME}/lib \
-        -lm
 
 
 # Universal GCC options: -g debugging. -l library

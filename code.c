@@ -4,9 +4,9 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include <string.h> // For strlen()
-#include <stdlib.h> // For rand() and srand()
-#include <time.h> // For time(NULL)
+//#include <string.h> // For strlen()
+//#include <stdlib.h> // For rand() and srand()
+//#include <time.h> // For time(NULL)
 #include "util_riscv.h"
 #include "util_shared.h"
 #include "cache.h"
