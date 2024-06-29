@@ -24,15 +24,16 @@
  */
 //#define TRAIN_TIMES 24 // (Spectre-SSB does not need trainning.) Times to train the predictor. There shall be an ideal value for each machine.
 // Note: smaller TRAIN_TIMES values increase misses or even cause failure, while larger ones unnecessarily take longer time.
-#define ATTACK_ROUNDS 3 // 40 Times to attack the same index. Ideal to have larger ATTACK_ROUNDS (takes more time but statistically better).
+#define ATTACK_ROUNDS 5 // 40 Times to attack the same index. Ideal to have larger ATTACK_ROUNDS (takes more time but statistically better).
 // For most processors with simple MDP(Memory Dependence Prediction), theoretically 1 will be enough for a successful Spectre-SSB attack.
-#define CACHE_HIT_THRESHOLD 3 // 43 Interval smaller than CACHE_HIT_THRESHOLD will be deemed as "cache hit". Ideal to have lower CACHE_HIT_THRESHOLD (higher accuracy).
+#define CACHE_HIT_THRESHOLD 43 // Even 1000 seems to be not enough. Interval smaller than CACHE_HIT_THRESHOLD will be deemed as "cache hit". Ideal to have lower CACHE_HIT_THRESHOLD (higher accuracy).
 // To keep results accurate, the larger TRAIN_TIMES and ATTACK_ROUNDS you have, the smaller CACHE_HIT_THRESHOLD shoud be.
 
 /* <<<<<< Mostly used parameters for debugging are listed above. <<<<<< */
 
 
-#define DEFAULT_STRING "#Secret_Information!"
+//#define DEFAULT_STRING "#Secret_Information!"
+#define DEFAULT_STRING "#Secret!"
 #define MAX_STRING_LENGTH_FACTOR 8
 /**
  * Arbitrary as long as your machine allows it
@@ -125,12 +126,12 @@ int main(void){
 	
 	char* defaultString = DEFAULT_STRING;
 	//int maxStringLength = strlen(defaultString) * MAX_STRING_LENGTH_FACTOR;
-    // Fixed because there is no printf in RSD.
-    char* secretString = DEFAULT_STRING;
+	// Fixed because there is no printf in RSD.
+	char* secretString = DEFAULT_STRING;
 	// Can not use strlen(secretString) so use this instead
-	uint32_t secretStringLength = 32;
+	uint32_t secretStringLength = 12; // 32. Save time.
 
-    // Allocate memory for the string. 
+    	// Allocate memory for the string. 
 	// Need to do this in main function because return 1 of subfunction will not terminate the main.
 	//secretString = malloc(maxStringLength * sizeof(char));
 	//if (secretString == NULL) {
@@ -260,6 +261,7 @@ int main(void){
     *outputAddr = '=';
     *outputAddr = '=';
     *outputAddr = '\n';
+
 	//printf("------ End of Attack ------\n");
 	
 	//printf("------ Summary ------\n");
