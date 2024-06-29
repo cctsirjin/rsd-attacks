@@ -2,8 +2,8 @@
 
 // No printf in RSD so all unnecessary printfs have been commented out.
 
-#include <stdio.h>
-#include <stdint.h>
+//#include <stdio.h>
+//#include <stdint.h>
 //#include <string.h> // For strlen()
 //#include <stdlib.h> // For rand() and srand()
 //#include <time.h> // For time(NULL)
