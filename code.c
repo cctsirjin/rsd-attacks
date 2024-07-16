@@ -8,7 +8,6 @@
 #include "util_riscv.h"
 #include "util_shared.h"
 #include "cache.h"
-#include "gadget.h"
 
 // Remind: Spectre SSB  will only succeed on machines with MDP (Memory Dependence Prediction) and speculative STL forwarding.
 
@@ -87,6 +86,8 @@
 
 uint8_t guideArray[ARRAY_SIZE_FACTOR];
 uint8_t probeArray[ARRAY_SIZE_FACTOR * ARRAY_STRIDE];
+
+#include "gadget.h"
 
 // TBD: mix the order in other ways.
 #define MIXER_A 65 // min 65. 163, 167, 127, 111. Must be larger than 64.
