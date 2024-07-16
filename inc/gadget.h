@@ -161,8 +161,12 @@ void victimFunc_04(uint32_t targetIdx){
 	anchorVar &= probeArray[guideArray[tempArray[1]] * ARRAY_STRIDE];
 }
 
-// Limited by nature of C language and current capability of RSD, the size of victimFunc array has to be static.
-// Size of this array should be the same as SECRET_LENGTH in main body of the source code.
+// (Obsolete since RSD will also predict victimFunc[](uint32_t). Need to directly call victimFunc_n above from main.)
+/* Limited by nature of C language and current capability of RSD, the size of victimFunc array has to be static.
+ * Size of this array should be the same as SECRET_LENGTH in main body of the source code.
+ */
+
+/*
 void (*victimFunc[])(uint32_t) = {
     victimFunc_00,
     victimFunc_01,
@@ -170,5 +174,6 @@ void (*victimFunc[])(uint32_t) = {
     victimFunc_03,
     victimFunc_04, 
 };
+*/
 
 #endif

