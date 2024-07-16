@@ -148,8 +148,8 @@ int main(void){
 			flushCache((uint32_t)probeArray, sizeof(probeArray));
 
 			victimFuncInit(attackIdx);
-			
-			switch (len) {
+			int n=len;
+			switch (n) {
 				case 0:
 					victimFunc_00(attackIdx);
 					break;
