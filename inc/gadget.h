@@ -8,6 +8,7 @@ uint8_t shift_base = 2;
 uint32_t tempArray[ARRAY_SIZE_FACTOR];
 
 uint32_t tempArrayIndex = 1;
+
 void victimFuncInit(uint32_t targetIdx)
 {
 /* Use a different index of tempArray to avoid effect of initial instruction cache miss.
@@ -30,7 +31,7 @@ void victimFuncInit(uint32_t targetIdx)
 	anchorVar &= probeArray[guideArray[tempArray[0]] * ARRAY_STRIDE];
 }
 
-tempArrayIndex = 1;
+uint32_t tempArrayIndex = 1;
 void victimFunc_00(uint32_t targetIdx){
 
 	tempArray[1] = targetIdx;
@@ -57,7 +58,7 @@ void victimFunc_00(uint32_t targetIdx){
 	anchorVar &= probeArray[guideArray[tempArray[1]] * ARRAY_STRIDE];
 }
 
-tempArrayIndex = 2;
+uint32_t tempArrayIndex = 2;
 void victimFunc_01(uint32_t targetIdx){
 
 	tempArray[2] = targetIdx;
@@ -84,7 +85,7 @@ void victimFunc_01(uint32_t targetIdx){
 	anchorVar &= probeArray[guideArray[tempArray[2]] * ARRAY_STRIDE];
 }
 
-tempArrayIndex = 3;
+uint32_t tempArrayIndex = 3;
 void victimFunc_02(uint32_t targetIdx){
 
 	tempArray[3] = targetIdx;
@@ -111,7 +112,7 @@ void victimFunc_02(uint32_t targetIdx){
 	anchorVar &= probeArray[guideArray[tempArray[3]] * ARRAY_STRIDE];
 }
 
-tempArrayIndex = 4;
+uint32_t tempArrayIndex = 4;
 void victimFunc_03(uint32_t targetIdx){
 
 	tempArray[4] = targetIdx;
@@ -138,7 +139,7 @@ void victimFunc_03(uint32_t targetIdx){
 	anchorVar &= probeArray[guideArray[tempArray[4]] * ARRAY_STRIDE];
 }
 
-tempArrayIndex = 5;
+uint32_t tempArrayIndex = 5;
 void victimFunc_04(uint32_t targetIdx){
 
 	tempArray[5] = targetIdx;
