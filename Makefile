@@ -4,7 +4,6 @@ SRCS = code.c
 include ../BuildC.inc.mk
 
 # Folders
-#SRC:=src
 INC:=inc
 LNK:=link
 OBJ:=obj
