@@ -6,8 +6,7 @@ uint8_t anchorVar = 0;
 
 uint8_t shift_base = 2;
 uint32_t tempArray[ARRAY_SIZE_FACTOR];
-
-int tempArrayIndex = 1;
+uint32_t tempArrayIndex = 1;
 
 void victimFuncInit(uint32_t targetIdx)
 {
@@ -15,6 +14,7 @@ void victimFuncInit(uint32_t targetIdx)
  * Basically the form is kept the same as succeeding formal victimFunc since it is expected to simulate real scenes
  * where attacker has no access to valid address like targetIdx.
  */
+//	tempArrayIndex = 1;
 	tempArray[0] = targetIdx;
     tempArrayIndex = tempArrayIndex << 4;
     asm("fcvt.s.wu fa4, %[in]\n"
@@ -31,7 +31,7 @@ void victimFuncInit(uint32_t targetIdx)
 	anchorVar &= probeArray[guideArray[tempArray[0]] * ARRAY_STRIDE];
 }
 
-tempArrayIndex = 1;
+//tempArrayIndex = 1;
 void victimFunc_00(uint32_t targetIdx){
 
 	tempArray[1] = targetIdx;
