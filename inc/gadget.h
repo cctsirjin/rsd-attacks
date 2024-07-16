@@ -30,16 +30,6 @@ void victimFuncInit(uint32_t targetIdx)
 	anchorVar &= probeArray[guideArray[tempArray[0]] * ARRAY_STRIDE];
 }
 
-// Limited by nature of C language and current capability of RSD, the size of victimFunc array has to be static.
-// Size of this array should be the same as SECRET_LENGTH in main body of the source code.
-void (*victimFunc[])(uint32_t) = {
-    victimFunc_00,
-    victimFunc_01,
-    victimFunc_02,
-    victimFunc_03,
-    victimFunc_04, 
-};
-
 void victimFunc_00(uint32_t targetIdx){
 
 	tempArray[1] = targetIdx;
@@ -169,5 +159,15 @@ void victimFunc_04(uint32_t targetIdx){
 	// "Quickly" load that value from that memory location.
 	anchorVar &= probeArray[guideArray[tempArray[1]] * ARRAY_STRIDE];
 }
+
+// Limited by nature of C language and current capability of RSD, the size of victimFunc array has to be static.
+// Size of this array should be the same as SECRET_LENGTH in main body of the source code.
+void (*victimFunc[])(uint32_t) = {
+    victimFunc_00,
+    victimFunc_01,
+    victimFunc_02,
+    victimFunc_03,
+    victimFunc_04, 
+};
 
 #endif
