@@ -6,7 +6,7 @@ uint8_t anchorVar = 0;
 
 uint8_t shift_base = 2;
 uint32_t tempArray[ARRAY_SIZE_FACTOR];
-int tempArrayIndex = 1;
+uint32_t tempArrayIndex = 1;
 
 void victimFuncInit(uint32_t targetIdx)
 {
@@ -31,7 +31,6 @@ void victimFuncInit(uint32_t targetIdx)
 	anchorVar &= probeArray[guideArray[tempArray[0]] * ARRAY_STRIDE];
 }
 
-//tempArrayIndex = 1;
 void victimFunc_00(uint32_t targetIdx){
 
 	tempArray[1] = targetIdx;
@@ -58,10 +57,9 @@ void victimFunc_00(uint32_t targetIdx){
 	anchorVar &= probeArray[guideArray[tempArray[1]] * ARRAY_STRIDE];
 }
 
-tempArrayIndex = 2;
 void victimFunc_01(uint32_t targetIdx){
 
-	tempArray[2] = targetIdx;
+	tempArray[1] = targetIdx;
 
 	tempArrayIndex = tempArrayIndex << 4;
 	asm("fcvt.s.wu	fa4, %[in]\n"
@@ -82,13 +80,12 @@ void victimFunc_01(uint32_t targetIdx){
 
 	tempArray[tempArrayIndex] = 0;
 	// "Quickly" load that value from that memory location.
-	anchorVar &= probeArray[guideArray[tempArray[2]] * ARRAY_STRIDE];
+	anchorVar &= probeArray[guideArray[tempArray[1]] * ARRAY_STRIDE];
 }
 
-tempArrayIndex = 3;
 void victimFunc_02(uint32_t targetIdx){
 
-	tempArray[3] = targetIdx;
+	tempArray[1] = targetIdx;
 
 	tempArrayIndex = tempArrayIndex << 4;
 	asm("fcvt.s.wu	fa4, %[in]\n"
@@ -109,13 +106,12 @@ void victimFunc_02(uint32_t targetIdx){
 
 	tempArray[tempArrayIndex] = 0;
 	// "Quickly" load that value from that memory location.
-	anchorVar &= probeArray[guideArray[tempArray[3]] * ARRAY_STRIDE];
+	anchorVar &= probeArray[guideArray[tempArray[1]] * ARRAY_STRIDE];
 }
 
-tempArrayIndex = 4;
 void victimFunc_03(uint32_t targetIdx){
 
-	tempArray[4] = targetIdx;
+	tempArray[1] = targetIdx;
 
 	tempArrayIndex = tempArrayIndex << 4;
 	asm("fcvt.s.wu	fa4, %[in]\n"
@@ -136,13 +132,12 @@ void victimFunc_03(uint32_t targetIdx){
 
 	tempArray[tempArrayIndex] = 0;
 	// "Quickly" load that value from that memory location.
-	anchorVar &= probeArray[guideArray[tempArray[4]] * ARRAY_STRIDE];
+	anchorVar &= probeArray[guideArray[tempArray[1]] * ARRAY_STRIDE];
 }
 
-tempArrayIndex = 5;
 void victimFunc_04(uint32_t targetIdx){
 
-	tempArray[5] = targetIdx;
+	tempArray[1] = targetIdx;
 
 	tempArrayIndex = tempArrayIndex << 4;
 	asm("fcvt.s.wu	fa4, %[in]\n"
@@ -163,7 +158,7 @@ void victimFunc_04(uint32_t targetIdx){
 
 	tempArray[tempArrayIndex] = 0;
 	// "Quickly" load that value from that memory location.
-	anchorVar &= probeArray[guideArray[tempArray[5]] * ARRAY_STRIDE];
+	anchorVar &= probeArray[guideArray[tempArray[1]] * ARRAY_STRIDE];
 }
 
 // Limited by nature of C language and current capability of RSD, the size of victimFunc array has to be static.
