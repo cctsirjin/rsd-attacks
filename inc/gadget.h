@@ -6,7 +6,7 @@ uint8_t anchorVar = 0;
 
 uint8_t shift_base = 2;
 uint32_t tempArray[ARRAY_SIZE_FACTOR];
-uint32_t tempArrayIndex = 1;
+int tempArrayIndex = 1;
 
 void victimFuncInit(uint32_t targetIdx)
 {
