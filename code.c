@@ -147,22 +147,27 @@ int main(void){
 //			flushCache(tempStringIndex, sizeof(tempStringIndex));
 			flushCache((uint32_t)probeArray, sizeof(probeArray));
 
-			victimFuncInit(attackIdx);
+			//victimFuncInit(attackIdx);
 			
 			switch (len) {
 				case 0:
+					victimFuncInit(attackIdx);
 					victimFunc_00(attackIdx);
 					break;
 				case 1:
+					victimFuncInit(attackIdx);
 					victimFunc_01(attackIdx);
 					break;
 				case 2:
+					victimFuncInit(attackIdx);
 					victimFunc_02(attackIdx);
 					break;
 				case 3:
+					victimFuncInit(attackIdx);
 					victimFunc_03(attackIdx);
 					break;
 				case 4:
+					victimFuncInit(attackIdx);
 					victimFunc_04(attackIdx);
 					break;
 				default:
