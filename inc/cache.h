@@ -39,7 +39,7 @@
 // Set up an empty array to put into the cache during the following cache flush.
 // This aims to guarantee a contiguous set of addresses which is at least the size of cache.
 // TBD: Investigate how to determine this MULTIPLIER.
-#define MULTIPLIER 2 // At least 2. for tests. 10 is enough.
+#define MULTIPLIER 2 // At least 2. Usually 10
 // If your source codes are unable to flush the cache thoroughly, you may try increasing this MULTIPLIER.
 // But, of course, that will cause longer execution time of the final binary programs.
 uint8_t dummyMem[MULTIPLIER * L1_DCACHE_CAPACITY_BYTES];
@@ -76,8 +76,9 @@ void flushCache(uint32_t memAddr, uint32_t memSize){
         // Combined with the for loop to move across the sets that you want to flush.
         uint32_t setOffset = (((memAddr & SET_MASK) >> L1_DCACHE_BLOCK_BITS) + i) << L1_DCACHE_BLOCK_BITS;
 
-        // There are N=L1_DCACHE_WAYS in a set to flush. And it needs to be repeated for 5 times since we have an extended dummyMem.
-        for(uint32_t j = 0; j < ((MULTIPLIER-1)*L1_DCACHE_WAYS); ++j){
+        // There are N=L1_DCACHE_WAYS in a set to flush. And it needs to be repeated for MULTIPLIER-1 times since we have an extended dummyMem.
+        //for(uint32_t j = 0; j < ((MULTIPLIER-1)*L1_DCACHE_WAYS); ++j){
+        for(uint32_t j = 0; j < L1_DCACHE_WAYS; ++j){
             // offset to reaccess the set
             uint32_t wayOffset = j << (L1_DCACHE_BLOCK_BITS + L1_DCACHE_SETS_BITS);
 
