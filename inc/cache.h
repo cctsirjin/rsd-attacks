@@ -77,8 +77,7 @@ void flushCache(uint32_t memAddr, uint32_t memSize){
         uint32_t setOffset = (((memAddr & SET_MASK) >> L1_DCACHE_BLOCK_BITS) + i) << L1_DCACHE_BLOCK_BITS;
 
         // There are N=L1_DCACHE_WAYS in a set to flush. And it needs to be repeated for 5 times since we have an extended dummyMem.
-        //for(uint32_t j = 0; j < ((MULTIPLIER-1)*L1_DCACHE_WAYS); ++j){
-        for(uint32_t j = 0; j < L1_DCACHE_WAYS; ++j){
+        for(uint32_t j = 0; j < ((MULTIPLIER-1)*L1_DCACHE_WAYS); ++j){
             // offset to reaccess the set
             uint32_t wayOffset = j << (L1_DCACHE_BLOCK_BITS + L1_DCACHE_SETS_BITS);
 
