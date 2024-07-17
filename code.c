@@ -126,7 +126,7 @@ void cacheAttack(){
 // Memory address for displaying characters (in place of printf)
 volatile char* outputAddr = (char*)0x40002000;
 
-void resultOutput(uint32_t* resultArray, uint32_t resultArraySize, uint32_t* outIdxArray, uint8_t* outValArray){
+void resultOutput(uint32_t* resultArray, uint32_t resultArraySize, uint8_t* outIdxArray, uint32_t* outValArray){
 	
 	outValArray[0] = 0;
 	outIdxArray[0] = 0;
