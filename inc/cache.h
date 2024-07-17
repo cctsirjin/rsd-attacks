@@ -46,7 +46,7 @@ uint8_t dummyMem[MULTIPLIER * L1_DCACHE_CAPACITY_BYTES];
 // Temporary variable.
 uint8_t flush_junk = 0;
 /**
- * Flush the cache of the address given since RV64 does not have an x86 clflush type instruction.
+ * Flush the cache of the address given since RISC-V does not have an x86 clflush type instruction.
  * Clears any set that has the same set bits as the input address range.
  * Note: This does not work if you are trying to flush dummyMem out of the cache.
  * @param memAddr starting address to clear the cache
