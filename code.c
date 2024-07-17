@@ -94,7 +94,8 @@ uint8_t probeArray[ARRAY_SIZE_FACTOR * ARRAY_STRIDE];
 #define MIXER_B 1 // Arbitrary as long as larger than 0.
 
 	uint32_t mixed_i;
-	register uint32_t start, diff; // Use register variables to reduce access time.
+//	register uint32_t start, diff; // Use register variables to reduce access time.
+	uint32_t start, diff;
 	uint32_t dummy;
 
 	// Get the highest and second highest hit values in results().
