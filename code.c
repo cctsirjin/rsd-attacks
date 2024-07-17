@@ -31,7 +31,6 @@
 
 #define SECRET_STRING "RISCV"
 #define SECRET_LENGTH 5
-//#define MAX_STRING_LENGTH_FACTOR 8
 /**
  * Arbitrary as long as your machine allows it
  */
@@ -92,7 +91,6 @@ uint8_t probeArray[ARRAY_SIZE_FACTOR * ARRAY_STRIDE];
 #include "gadget.h"
 
 uint32_t mixed_i;
-//	uint32_t start, diff;
 uint32_t dummy;
 
 // Get the highest and second highest hit values in results().
@@ -156,8 +154,6 @@ void main(){
 		probeArray[i] = 1;
 	}
 
-    // Memory address for displaying characters (in place of printf)
-//    volatile char* outputAddr = (char*)0x40002000;
     *outputAddr = '=';
     *outputAddr = '=';
     *outputAddr = '=';
@@ -210,11 +206,6 @@ void main(){
 
 		}
 
-		
-	//	results[0] ^= dummy;
-	//	topTwoIdx(results, RESULT_ARRAY_SIZE, output, hitArray);
-	//	resultOutput(results, RESULT_ARRAY_SIZE, output, hitArray);
-
 		*outputAddr = 'V';
     	*outputAddr = 'a';
     	*outputAddr = 'l';
@@ -222,7 +213,7 @@ void main(){
     	*outputAddr = 'e';
     	*outputAddr = ':';
     	*outputAddr = ' ';
-		*outputAddr = (char)hitIdx[0];// + '0';
+		*outputAddr = (char)hitIdx[0];
         *outputAddr = ' ';
         *outputAddr = 'H';
         *outputAddr = 'i';

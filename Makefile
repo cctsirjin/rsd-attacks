@@ -4,12 +4,13 @@ SRCS = code.c
 include ../BuildC.inc.mk
 
 # Folders
+#SRC:=src
 INC:=inc
-LNK:=link
-OBJ:=obj
-BIN:=bin
-DMP:=dump
-DEP:=dep
+#LNK:=link
+#OBJ:=obj
+#BIN:=bin
+#DMP:=dump
+#DEP:=dep
 
 # Commands and flags
 #CC:=riscv32-unknown-elf-gcc
@@ -46,7 +47,7 @@ CFLAGS = -g -O0 -fno-stack-protector -fno-zero-initialized-in-bss -ffreestanding
 # -W: warning options.
 # https://gcc.gnu.org/onlinedocs/gcc-3.1.1/gcc/Warning-Options.html
 
-DEPFLAGS=-MT $@ -MMD -MP -MF $(DEP)/$*.d
+#DEPFLAGS=-MT $@ -MMD -MP -MF $(DEP)/$*.d
 
 # DEPFLAGS: Auto-Dependency Generation:
 # https://make.mad-scientist.net/papers/advanced-auto-dependency-generation/
