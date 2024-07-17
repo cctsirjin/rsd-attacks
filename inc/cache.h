@@ -53,8 +53,7 @@ uint8_t flush_junk = 0;
  * @param memSize size of the data to remove in bytes
  */
 void flushCache(uint32_t memAddr, uint32_t memSize){
-    //printf("Flushed memAddr(0x%x) tag(0x%x) set(0x%x) off(0x%x) memSize(%d)\n", memAddr, (memAddr & TAG_MASK) >> (L1_DCACHE_SETS_BITS + L1_DCACHE_BLOCK_BITS), (memAddr & SET_MASK) >> L1_DCACHE_BLOCK_BITS, memAddr & OFFSET_MASK, memSize);
-
+    
     // Find out the quantity of blocks that need to be cleared.
     uint32_t numSetsClear = memSize >> L1_DCACHE_BLOCK_BITS; // This operation removes block bits and shifts set bits to the right.
 	//  Offset bits other than all 0s indicate that it is not the beginning block of a set, so additional clearing is required.
@@ -66,32 +65,26 @@ void flushCache(uint32_t memAddr, uint32_t memSize){
         numSetsClear = L1_DCACHE_SETS;
     }
 
-    //printf("numSetsClear(%d)\n", numSetsClear);
-
     // This memory address alignedMem is the start of a contiguous set of memory that will fit inside the cache.
     // Thus it has the following properties:
     // 1. dummyMem <= alignedMem < dummyMem + sizeof(dummyMem) (since set bits and offset are cleared)
     // 2. alignedMem has set bits = 0 and offset = 0, only tag bits remain.
     uint32_t alignedMem = (((uint32_t)&dummyMem) + L1_DCACHE_CAPACITY_BYTES) & TAG_MASK;
 	// "&" is the address-of operator. The type of the result is "pointer to the operand."
-    //printf("alignedMem(0x%x)\n", alignedMem);
 
     for (uint32_t i = 0; i < numSetsClear; ++i){
         // Combined with the for loop to move across the sets that you want to flush.
         uint32_t setOffset = (((memAddr & SET_MASK) >> L1_DCACHE_BLOCK_BITS) + i) << L1_DCACHE_BLOCK_BITS;
-        //printf("setOffset(0x%x)\n", setOffset);
 
         // There are N=L1_DCACHE_WAYS in a set to flush. And it needs to be repeated for 5 times since we have an extended dummyMem.
         for(uint32_t j = 0; j < ((MULTIPLIER-1)*L1_DCACHE_WAYS); ++j){
             // offset to reaccess the set
             uint32_t wayOffset = j << (L1_DCACHE_BLOCK_BITS + L1_DCACHE_SETS_BITS);
-            //printf("wayOffset(0x%x)\n", wayOffset);
 
             // The processor will fetch needed (but empty, this property is important) data into the cache
 			// as the following expression shows, which, due to same set bits and tags, evicts previous data.
             flush_junk = *((uint8_t*)(alignedMem + setOffset + wayOffset));
 			// * indirection or dereferencing operator accesses the object the pointer points to.
-            //printf("evict read(0x%x)\n", alignedMem + setOffset + wayOffset);
         }
     }
 }
