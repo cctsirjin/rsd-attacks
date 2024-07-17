@@ -140,6 +140,7 @@ void resultOutput(uint32_t* resultArray, uint32_t resultArraySize){
 		}
 	}
 
+		volatile char* outputAddr = (char*)0x40002000;
 		*outputAddr = 'V';
     	*outputAddr = 'a';
     	*outputAddr = 'l';
