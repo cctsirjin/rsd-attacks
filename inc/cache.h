@@ -39,7 +39,7 @@
 // Set up an empty array to put into the cache during the following cache flush.
 // This aims to guarantee a contiguous set of addresses which is at least the size of cache.
 // TBD: Investigate how to determine this MULTIPLIER.
-#define MULTIPLIER 1 // 2 for tests. 10 is enough.
+#define MULTIPLIER 2 // 2 for tests. 10 is enough.
 // If your source codes are unable to flush the cache thoroughly, you may try increasing this MULTIPLIER.
 // But, of course, that will cause longer execution time of the final binary programs.
 uint8_t dummyMem[MULTIPLIER * L1_DCACHE_CAPACITY_BYTES];
