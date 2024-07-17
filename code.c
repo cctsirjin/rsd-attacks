@@ -135,7 +135,8 @@ void cacheAttack(){
 			outIdxArray[0] = i;
 			outValArray[0] = results[i];
 		}
-
+	}
+	
 		*outputAddr = 'V';
     	*outputAddr = 'a';
     	*outputAddr = 'l';
