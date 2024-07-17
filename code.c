@@ -130,7 +130,7 @@ void cacheAttack(uint8_t outIdx, uint32_t outTimes){
 	outTimes = 0;
 
 	for (uint32_t i = 0; i < RESULT_ARRAY_SIZE; i++){
-		if (results[i] > outVal){
+		if (results[i] > outTimes){
 			outIdx = i;
 			outTimes = results[i];
 		}
