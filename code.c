@@ -136,7 +136,8 @@ void cacheAttack(){
 			outValArray[0] = results[i];
 		}
 	}
-	
+
+	volatile char* outputAddr = (char*)0x40002000;
 		*outputAddr = 'V';
     	*outputAddr = 'a';
     	*outputAddr = 'l';
@@ -144,7 +145,7 @@ void cacheAttack(){
     	*outputAddr = 'e';
     	*outputAddr = ':';
     	*outputAddr = ' ';
-    	*outputAddr = (char)outIdxArray[0];// + '0';//
+    	*outputAddr = (char)outValArray[0];// + '0';//
 	//	*outputAddr = x;//output[0];
         *outputAddr = ' ';
         *outputAddr = 'H';
@@ -152,7 +153,7 @@ void cacheAttack(){
         *outputAddr = 't';
         *outputAddr = ':';
         *outputAddr = ' ';
-        *outputAddr = (char)outValArray[0] + '0';
+        *outputAddr = (char)outIdxArray[0] + '0';
         *outputAddr = '\n';
 
 }
