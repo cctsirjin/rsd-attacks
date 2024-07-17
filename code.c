@@ -122,6 +122,42 @@ void cacheAttack(){
 				}
 			}
 }
+
+// Memory address for displaying characters (in place of printf)
+volatile char* outputAddr = (char*)0x40002000;
+
+void resultOutput(uint32_t* resultArray, uint32_t resultArraySize){
+	
+	uint8_t* outValArray[0] = 0;
+	uint32_t* outIdxArray[0] = 0;
+
+	for (uint32_t i = 0; i < resultArraySize; i++){
+		if (resultArray[i] > outValArray[0]){
+			outIdxArray[0] = i;
+			outValArray[0] = resultArray[i];
+		}
+	}
+
+		*outputAddr = 'V';
+    	*outputAddr = 'a';
+    	*outputAddr = 'l';
+    	*outputAddr = 'u';
+    	*outputAddr = 'e';
+    	*outputAddr = ':';
+    	*outputAddr = ' ';
+    	*outputAddr = (char)outIdxArray[0];// + '0';//
+	//	*outputAddr = x;//output[0];
+        *outputAddr = ' ';
+        *outputAddr = 'H';
+        *outputAddr = 'i';
+        *outputAddr = 't';
+        *outputAddr = ':';
+        *outputAddr = ' ';
+        *outputAddr = (char)outValArray[0] + '0';
+        *outputAddr = '\n';
+
+}
+
 void main(){
 
 	char* secretString = SECRET_STRING;
@@ -138,7 +174,7 @@ void main(){
 	}
 
     // Memory address for displaying characters (in place of printf)
-    volatile char* outputAddr = (char*)0x40002000;
+//    volatile char* outputAddr = (char*)0x40002000;
     *outputAddr = '=';
     *outputAddr = '=';
     *outputAddr = '=';
@@ -193,8 +229,9 @@ void main(){
 		/* results[0] of static array results() will always be translated into a NULL control character in ASCII or Unicode, so don't worry. */
 		/* ^ bitwise exclusive OR sets a one in each bit position where its operands have different bits, and zero where they are the same.*/
 		results[0] ^= dummy;
-		topTwoIdx(results, RESULT_ARRAY_SIZE, output, hitArray);
-
+	//	topTwoIdx(results, RESULT_ARRAY_SIZE, output, hitArray);
+		resultOutput(results, RESULT_ARRAY_SIZE);
+/*
 		*outputAddr = 'V';
     	*outputAddr = 'a';
     	*outputAddr = 'l';
@@ -212,7 +249,7 @@ void main(){
         *outputAddr = ' ';
         *outputAddr = (char)hitArray[0] + '0';
         *outputAddr = '\n';
-
+*/
 		attackIdx++;
 
 	}
