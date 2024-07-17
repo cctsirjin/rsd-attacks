@@ -126,11 +126,9 @@ void cacheAttack(){
 // Memory address for displaying characters (in place of printf)
 volatile char* outputAddr = (char*)0x40002000;
 
-void resultOutput(uint32_t* resultArray, uint32_t resultArraySize){
+void resultOutput(uint32_t* resultArray, uint32_t resultArraySize, uint32_t* outIdxArray, uint8_t* outValArray){
 	
-	uint8_t* outValArray;
 	outValArray[0] = 0;
-	uint32_t* outIdxArray;
 	outIdxArray[0] = 0;
 
 	for (uint32_t i = 0; i < resultArraySize; i++){
@@ -140,7 +138,7 @@ void resultOutput(uint32_t* resultArray, uint32_t resultArraySize){
 		}
 	}
 
-		volatile char* outputAddr = (char*)0x40002000;
+/*
 		*outputAddr = 'V';
     	*outputAddr = 'a';
     	*outputAddr = 'l';
@@ -158,7 +156,7 @@ void resultOutput(uint32_t* resultArray, uint32_t resultArraySize){
         *outputAddr = ' ';
         *outputAddr = (char)outValArray[0] + '0';
         *outputAddr = '\n';
-
+*/
 }
 
 void main(){
@@ -233,8 +231,8 @@ void main(){
 		/* ^ bitwise exclusive OR sets a one in each bit position where its operands have different bits, and zero where they are the same.*/
 		results[0] ^= dummy;
 	//	topTwoIdx(results, RESULT_ARRAY_SIZE, output, hitArray);
-		resultOutput(results, RESULT_ARRAY_SIZE);
-/*
+		resultOutput(results, RESULT_ARRAY_SIZE, output, hitArray);
+
 		*outputAddr = 'V';
     	*outputAddr = 'a';
     	*outputAddr = 'l';
@@ -252,7 +250,7 @@ void main(){
         *outputAddr = ' ';
         *outputAddr = (char)hitArray[0] + '0';
         *outputAddr = '\n';
-*/
+
 		attackIdx++;
 
 	}
