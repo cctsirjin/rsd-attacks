@@ -22,9 +22,9 @@
  */
 //#define TRAIN_TIMES 24 // (Spectre-SSB does not need training.) Times to train the predictor. There shall be an ideal value for each machine.
 // Note: smaller TRAIN_TIMES values increase misses or even cause failure, while larger ones unnecessarily take longer time.
-#define ATTACK_ROUNDS 9 // 10 Also effective when 12, 20. Times to attack the same index. Ideal to have larger ATTACK_ROUNDS (takes more time but statistically better).
+#define ATTACK_ROUNDS 10 // 10 Also effective when 12, 20. Times to attack the same index. Ideal to have larger ATTACK_ROUNDS (takes more time but statistically better).
 // For most processors with simple MDP(Memory Dependence Prediction), theoretically 1 will be enough for a successful Spectre-SSB attack.
-#define CACHE_HIT_THRESHOLD 40 // 38 Interval smaller than CACHE_HIT_THRESHOLD will be deemed as "cache hit". Ideal to have lower CACHE_HIT_THRESHOLD (higher accuracy).
+#define CACHE_HIT_THRESHOLD 34 // 38 Interval smaller than CACHE_HIT_THRESHOLD will be deemed as "cache hit". Ideal to have lower CACHE_HIT_THRESHOLD (higher accuracy).
 // To keep results accurate, the larger TRAIN_TIMES and ATTACK_ROUNDS you have, the smaller CACHE_HIT_THRESHOLD shoud be.
 
 /* <<<<<< Mostly used parameters for debugging are listed above. <<<<<< */
