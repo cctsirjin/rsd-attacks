@@ -128,8 +128,10 @@ volatile char* outputAddr = (char*)0x40002000;
 
 void resultOutput(uint32_t* resultArray, uint32_t resultArraySize){
 	
-	uint8_t* outValArray[0] = 0;
-	uint32_t* outIdxArray[0] = 0;
+	uint8_t* outValArray;
+	outValArray[0] = 0;
+	uint32_t* outIdxArray;
+	outIdxArray[0] = 0;
 
 	for (uint32_t i = 0; i < resultArraySize; i++){
 		if (resultArray[i] > outValArray[0]){
