@@ -185,8 +185,8 @@ void main(){
 			flushCache((uint32_t)probeArray, sizeof(probeArray));
 
 			victimFuncInit(attackIdx);
-//			victimFunc[len](attackIdx);
-			switch (len) {
+			victimFunc[len](attackIdx);
+/*			switch (len) {
 				case 0:
 					victimFunc_00(attackIdx);
 					break;
@@ -205,7 +205,7 @@ void main(){
 				default:
 					break;
 			}
-
+*/
 			cacheAttack(hitIdx, hitTimes);
 
 		}
