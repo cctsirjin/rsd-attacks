@@ -125,9 +125,9 @@ void cacheAttack(){
 				}
 			}
 	
-	uint32_t* outValArray
+	uint32_t* outValArray;
 	outValArray[0] = 0;
-	uint8_t* outIdxArray
+	uint8_t* outIdxArray;
 	outIdxArray[0] = 0;
 
 	for (uint32_t i = 0; i < RESULT_ARRAY_SIZE; i++){
