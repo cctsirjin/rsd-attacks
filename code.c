@@ -1,7 +1,7 @@
 #include "../lib.c"
 
-#include <stdio.h>
-#include <stdint.h>
+//#include <stdio.h>
+//#include <stdint.h>
 //#include <string.h> // For strlen()
 //#include <stdlib.h> // For rand() and srand()
 //#include <time.h> // For time(NULL)
@@ -31,9 +31,6 @@
 
 #define SECRET_STRING "RISCV"
 #define SECRET_LENGTH 5
-/**
- * Arbitrary as long as your machine allows it
- */
 
 #define ARRAY_STRIDE L1_DCACHE_BLOCK_BYTES
 /**
