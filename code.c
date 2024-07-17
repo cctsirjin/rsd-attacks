@@ -94,8 +94,7 @@ uint8_t probeArray[ARRAY_SIZE_FACTOR * ARRAY_STRIDE];
 #define MIXER_B 1 // Arbitrary as long as larger than 0.
 
 	uint32_t mixed_i;
-	register uint32_t start = 0; // Use register variables to reduce access time.
-	register uint32_t diff = 0; // Use register variables to reduce access time.
+//	register uint32_t start, diff; // Use register variables (can only be local) to reduce access time.
 //	uint32_t start, diff;
 	uint32_t dummy;
 
@@ -108,6 +107,7 @@ uint8_t probeArray[ARRAY_SIZE_FACTOR * ARRAY_STRIDE];
 
 void cacheAttack(){
 
+			register uint32_t start, diff; // Use register variables (can only be local) to reduce access time.
 			// Read out probeArray and see the hit secret value.
 			/* Time reads. Order is slightly mixed up to prevent stride prediction (prefetching). */
 			for (int i = 0; i < ARRAY_SIZE_FACTOR; i++) {
