@@ -101,8 +101,8 @@ uint8_t probeArray[ARRAY_SIZE_FACTOR * ARRAY_STRIDE];
 	// Each index (from 0 to RESULT_ARRAY_SIZE-1) of results() represents a character,
 	// and its corresponding stored array value means cache hits.
 	static uint32_t results[RESULT_ARRAY_SIZE];
-	uint8_t* hitIdx[2];
-	uint32_t* hitTimes[2];
+	uint8_t hitIdx[2];
+	uint32_t hitTimes[2];
 
 // Memory address for displaying characters (in place of printf)
 volatile char* outputAddr = (char*)0x40002000;
@@ -126,7 +126,7 @@ void cacheAttack(uint8_t* outIdx, uint32_t* outTimes){
 			}
 
 	results[0] ^= dummy;
-	
+
 	outIdx[0] = 0;
 	outTimes[0] = 0;
 
