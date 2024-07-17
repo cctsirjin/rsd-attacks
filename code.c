@@ -225,6 +225,11 @@ void main(){
 	//	topTwoIdx(results, RESULT_ARRAY_SIZE, output, hitArray);
 	//	resultOutput(results, RESULT_ARRAY_SIZE, output, hitArray);
 
+	uint8_t* output;
+	output[0] = hitIdx;
+	uint32_t* hitArray;
+	hitArray[0] = hitTimes;
+
 		*outputAddr = 'V';
     	*outputAddr = 'a';
     	*outputAddr = 'l';
@@ -232,16 +237,16 @@ void main(){
     	*outputAddr = 'e';
     	*outputAddr = ':';
     	*outputAddr = ' ';
-    //	*outputAddr = (char)output[0];// + '0';//
-		*outputAddr = (char)hitIdx;
+    	*outputAddr = (char)output[0];// + '0';//
+	//	*outputAddr = (char)hitIdx;
         *outputAddr = ' ';
         *outputAddr = 'H';
         *outputAddr = 'i';
         *outputAddr = 't';
         *outputAddr = ':';
         *outputAddr = ' ';
-    //    *outputAddr = (char)hitArray[0] + '0';
-		*outputAddr = (char)hitTimes + '0';
+        *outputAddr = (char)hitArray[0] + '0';
+	//	*outputAddr = (char)hitTimes + '0';
         *outputAddr = '\n';
 
 		attackIdx++;
