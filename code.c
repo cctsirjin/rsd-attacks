@@ -195,7 +195,7 @@ void main(){
 
 			// Make sure array you read from is not in the cache.
 //			flushCache(tempStringIndex, sizeof(tempStringIndex));
-//			flushCache((uint32_t)probeArray, sizeof(probeArray));
+			flushCache((uint32_t)probeArray, sizeof(probeArray));
 
 			victimFuncInit(attackIdx);
 			switch (len) {
