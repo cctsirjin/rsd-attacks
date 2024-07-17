@@ -14,7 +14,6 @@ void victimFuncInit(uint32_t targetIdx)
  * Basically the form is kept the same as succeeding formal victimFunc since it is expected to simulate real scenes
  * where attacker has no access to valid address like targetIdx.
  */
-//	tempArrayIndex = 1;
 	tempArray[0] = targetIdx;
     tempArrayIndex = tempArrayIndex << 4;
     asm("fcvt.s.wu fa4, %[in]\n"
@@ -172,6 +171,5 @@ void (*victimFunc[])(uint32_t) = {
     victimFunc_03,
     victimFunc_04, 
 };
-
 
 #endif
