@@ -84,28 +84,28 @@
  * For simplicity it is to set equal to RESULT_ARRAY_SIZE and has been proved to be sufficient.
  */
 
+// Memory address for displaying characters (in place of printf)
+volatile char* outputAddr = (char*)0x40002000;
+
 uint8_t guideArray[ARRAY_SIZE_FACTOR];
 uint8_t probeArray[ARRAY_SIZE_FACTOR * ARRAY_STRIDE];
 
 #include "gadget.h"
 
+uint32_t mixed_i;
+//	uint32_t start, diff;
+uint32_t dummy;
+
+// Get the highest and second highest hit values in results().
+// Each index (from 0 to RESULT_ARRAY_SIZE-1) of results() represents a character,
+// and its corresponding stored array value means cache hits.
+static uint32_t results[RESULT_ARRAY_SIZE];
+uint8_t hitIdx[2];
+uint32_t hitTimes[2];
+
 // TBD: mix the order in other ways.
 #define MIXER_A 65 // min 65. 163, 167, 127, 111. Must be larger than 64.
 #define MIXER_B 1 // Arbitrary as long as larger than 0.
-
-	uint32_t mixed_i;
-//	uint32_t start, diff;
-	uint32_t dummy;
-
-	// Get the highest and second highest hit values in results().
-	// Each index (from 0 to RESULT_ARRAY_SIZE-1) of results() represents a character,
-	// and its corresponding stored array value means cache hits.
-	static uint32_t results[RESULT_ARRAY_SIZE];
-	uint8_t hitIdx[2];
-	uint32_t hitTimes[2];
-
-// Memory address for displaying characters (in place of printf)
-volatile char* outputAddr = (char*)0x40002000;
 
 void cacheAttack(uint8_t* outIdx, uint32_t* outTimes){
 
@@ -141,19 +141,6 @@ void cacheAttack(uint8_t* outIdx, uint32_t* outTimes){
 	}
 
 }
-
-/*void resultOutput(uint32_t* resultArray, uint32_t resultArraySize, uint8_t* outIdxArray, uint32_t* outValArray){
-	
-	outValArray[0] = 0;
-	outIdxArray[0] = 0;
-
-	for (uint32_t i = 0; i < resultArraySize; i++){
-		if (resultArray[i] > outValArray[0]){
-			outIdxArray[0] = i;
-			outValArray[0] = resultArray[i];
-		}
-	}
-}*/
 
 void main(){
 
@@ -196,8 +183,7 @@ void main(){
 		for(uint32_t atkRound = 0; atkRound < ATTACK_ROUNDS; atkRound++){
 
 			// Make sure array you read from is not in the cache.
-//			flushCache(tempStringIndex, sizeof(tempStringIndex));
-			flushCache((uint32_t)probeArray, sizeof(probeArray));
+//			flushCache((uint32_t)probeArray, sizeof(probeArray));
 
 			victimFuncInit(attackIdx);
 			switch (len) {
@@ -216,10 +202,12 @@ void main(){
 				case 4:
 					victimFunc_04(attackIdx);
 					break;
-				//default:
-				//	break;
+				default:
+					break;
 			}
+
 			cacheAttack(hitIdx, hitTimes);
+
 		}
 
 		
@@ -259,5 +247,4 @@ void main(){
     *outputAddr = '=';
     *outputAddr = '\n';
 
-//	return 0;
 }
