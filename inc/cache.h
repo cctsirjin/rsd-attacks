@@ -6,9 +6,9 @@
 #define L1_DCACHE_WAYS 2 // Degree of associativity N = 2. i.e. 2-way set associative. In the link above: "CONF_DCACHE_WAY_NUM = 2"
 #define L1_DCACHE_BLOCK_BYTES 8 // b = 8Byte. In the link above: "CONF_DCACHE_LINE_BYTE_NUM = 8"
 #define L1_DCACHE_BLOCK_BITS 3 // = log2(b).
-#define L1_DCACHE_SETS 2048 // Now 32KB. Used to be 256 (for 4KB D$). S = 2^L1_DCACHE_SETS_BITS.
+#define L1_DCACHE_SETS 256 // 2048 for 32KB. Used to be 256 (for 4KB D$). S = 2^L1_DCACHE_SETS_BITS.
 // Ref: S=B/N=C/Nb. C=32KiB, L1_DCACHE_WAYS=N=2, b=8Byte, S=32KiB/(2x8Byte)=2KB=2048B.
-#define L1_DCACHE_SETS_BITS 11 // Now 32KB. Used to be 8 (for 4KB D$). = log2(S). In the link above: "CONF_DCACHE_INDEX_BIT_WIDTH = 9 - $clog2(CONF_DCACHE_WAY_NUM)"
+#define L1_DCACHE_SETS_BITS 8 // 2048 for 32KB. Used to be 8 (for 4KB D$). = log2(S). In the link above: "CONF_DCACHE_INDEX_BIT_WIDTH = 9 - $clog2(CONF_DCACHE_WAY_NUM)"
 #define L1_DCACHE_CAPACITY_BYTES (L1_DCACHE_SETS*L1_DCACHE_WAYS*L1_DCACHE_BLOCK_BYTES) // Cache Capacity C=Bb=SNb=256*2*8Byte=4KiB
 #define FULL_MASK 0xFFFFFFFF // The address size is 32 bits. Refer to https://github.com/rsd-devel/rsd/blob/master/Processor/Src/BasicTypes.sv "ADDR_WIDTH = 32"
 /**
@@ -39,7 +39,7 @@
 // Set up an empty array to put into the cache during the following cache flush.
 // This aims to guarantee a contiguous set of addresses which is at least the size of cache.
 // TBD: Investigate how to determine this MULTIPLIER.
-#define MULTIPLIER 5 // At least 2. Usually 5. Ensure results using 10.
+#define MULTIPLIER 5 // At least 2. If the L1_DCACHE_WAYS is small, you will need a large value for this.
 // If your source codes are unable to flush the cache thoroughly, you may try increasing this MULTIPLIER.
 // But, of course, that will cause longer execution time of the final binary programs.
 uint8_t dummyMem[MULTIPLIER * L1_DCACHE_CAPACITY_BYTES];
