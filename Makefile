@@ -14,7 +14,7 @@ INC:=inc
 
 # Commands and flags
 #CC:=riscv32-unknown-elf-gcc
-#OBJDUMP:=riscv32-unknown-elf-objdump -S
+OBJDUMP:=riscv32-unknown-elf-objdump -S
 #LDFLAGS:=-static -lgcc
 
 # -lgcc: linker parameter that tells the linker to link against libgcc
